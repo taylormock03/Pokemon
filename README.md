@@ -1,6 +1,6 @@
 DESCRIPTION:
 
-	This is Pokemon generation 1 (Red/Blue). It is a command prompt version of the original games and contains all 151 of the original gen 1 pokemon (No I did not add MissingNo.) Due to this being an early build, I would appreciate any feedback, bug reports, or suggestions for further versions.
+	This is Pokemon generation 1 (Red/Blue). It is a command prompt version of the original games and contains all 151 of the original gen 1 pokemon (No I did not add MissingNo.) Due to this being an early build, I would appreciate any feedback, bug reports, or suggestions for further versions. 
 
 
 CHANGELOG:
