@@ -5,7 +5,7 @@ from random import randint
 import math
 from enum import Enum
 
-
+print("test")
 ## Variable set up
 global Generation_Number
 
