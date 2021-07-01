@@ -45,5 +45,6 @@ def loadAll(data):
     pokemon = loadPokemon(data,moves)
     gyms = loadGym(data,pokemon)
     locations = loadLocations(data,gyms,pokemon)
+    foo =""
     return pokemon,locations
     
