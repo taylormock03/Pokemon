@@ -4,12 +4,12 @@ from pprint import pprint
 from random import randint
 import math
 from enum import Enum
+from ObjectInit import *
 
-print("test")
 ## Variable set up
 global Generation_Number
 
-#Generation pokemon
+#Generation pokemon (it is obsoleted, but will be kept in until the data is sufficiently refactored)
 global Generation
 
 ##gamesaves
@@ -22,11 +22,16 @@ gamedata["PcMoves"] = []
 gamedata["BattleWon"]=0
 gamedata["money"]=0
 gamedata["pokeballs"] = 0
-gamedata["xp"] = []
+
+## made redundant 
+# gamedata["xp"] = []
 
 
 def firstload():
+    ##I don't know why this needs to be redeclared since Generation_Number is already defined, but whatever
     global Generation_Number
+
+    ##Figures out which save file needs to be loaded for the object Init file
     while True:
         Generation_Number = input("Which generation would you like to play?")
         if not Generation_Number.isdigit():
@@ -36,6 +41,10 @@ def firstload():
             with open('Generations/Generation_'+ Generation_Number +'.txt') as json_file:
                 Generation = json.load(json_file)            
             
+            ##This is where the objects are initialised
+            loadAll(Generation)
+
+            ##Figures out whether a savegame needs to be loaded
             start=input("Do you want to load a game? ")
             if start == "yes":
                 load()
