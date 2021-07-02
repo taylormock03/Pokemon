@@ -60,7 +60,6 @@ class GymTrainer:
 def loadPokemon(data,moves):
     pokeList = []
     i = 0
-    indexOffset = 0
     for x in data["pokemon"]:
         pokeList.append(Pokemon(x, 
                             data["type_1"][i],
@@ -79,7 +78,6 @@ def loadPokemon(data,moves):
                 pokeList[i].addLearnset(moves[int(y)])
             except:
                 print("Pokemon that fucked up: " + pokeList[i].name)
-                indexOffset+=1
                 break
         i+=1
     return pokeList
