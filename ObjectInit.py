@@ -29,15 +29,19 @@ class GymTrainer:
     pokemon = []
 
 def loadPokemon(data,moves):
+    pokeList = []
     return pokeList
 
 def loadMoves(data):
+    moveList = []
     return moveList
 
 def loadGym(data,pokemon):
-    return Trainers
+    trainers = []
+    return trainers
 
 def loadLocations(data,gyms,pokemon):
+    locations = []
     return locations
 
 def loadAll(data):
