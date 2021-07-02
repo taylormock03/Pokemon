@@ -8,7 +8,8 @@ from ObjectInit import *
 
 ## Variable set up
 global Generation_Number
-
+global pokemon
+global generations
 #Generation pokemon (it is obsoleted, but will be kept in until the data is sufficiently refactored)
 global Generation
 
@@ -42,7 +43,7 @@ def firstload():
                 Generation = json.load(json_file)            
             
             ##This is where the objects are initialised
-            loadAll(Generation)
+            pokemon,locations = loadAll(Generation)
 
             ##Figures out whether a savegame needs to be loaded
             start=input("Do you want to load a game? ")

@@ -33,6 +33,15 @@ class Pokemon:
         self.learnsets.append(move)
         return
 
+    def setNextEvolve(self,evolution):
+        self.__nextEvolve=evolution
+
+    def setLevel(self,level):
+        self.__level = level
+    
+    def CalculateStats():
+        return
+
 class Move:
     name = ""
     __accuracy = 0
@@ -54,8 +63,21 @@ class Location:
     gym = ""
     locationPokemon = []
 
+    def __init__(self, name, gym, locationPokemon):
+        self.name = name
+        self.gym = gym
+        self.locationPokemon = locationPokemon
+
 class GymTrainer:
-    pokemon = []
+    
+    def __init__(self):
+        self.pokemon = []
+
+    def addPokemon(self,pokemon,level):
+        pokemon.setLevel(level)
+        self.pokemon.append(pokemon)
+
+
 
 def loadPokemon(data,moves):
     pokeList = []
@@ -69,17 +91,20 @@ def loadPokemon(data,moves):
                             data["defence"][i],
                             data["speed"][i],
                             ))
-        try:
-            learnset = data["learnsets"][i].split("-")
-        except:
-            print(pokeList[i-1].name + pokeList[i-1].learnsets[0].name)
+        learnset = data["learnsets"][i].split("-")
         for y in learnset:
-            try:
-                pokeList[i].addLearnset(moves[int(y)])
-            except:
-                print("Pokemon that fucked up: " + pokeList[i].name)
-                break
+            pokeList[i].addLearnset(moves[int(y)])
         i+=1
+    # This is where the next evolve will be added in. This had to be added last
+    # as the next evolution would not have been created when we were initially 
+    # creating the objects
+    index=0
+    for x in data["next_evolve"]:
+        if x != 0:
+            pokeList[index].setNextEvolve(pokeList[x])
+        index+=1
+
+
     return pokeList
 
 
@@ -97,11 +122,36 @@ def loadMoves(data):
     return moveList
 
 def loadGym(data,pokemon):
-    trainers = []
-    return trainers
+    gyms = []
+    i=0
+    for x in data["TrainerPokemon"]:
+        gyms.append(GymTrainer())
+        lineUp= x.split("-")
+        lineUpLevel= data["TrainerLevel"][i].split("-")
+        y=0
+        for id in lineUp:
+            if id == "1000":
+                break
+            gyms[i].addPokemon(pokemon[int(id)],lineUpLevel[y])
+            y+=1
+        i+=1
+    return gyms
 
 def loadLocations(data,gyms,pokemon):
     locations = []
+    i=0
+    for x in data["location"]:
+        locationPokemonId=data["LocationPokemon"][i].split("-")
+        locationPokemon =[]
+        for id in locationPokemonId:
+            locationPokemon.append(pokemon[int(id)])
+        locations.append(Location(
+                                    x,
+                                    gyms[i],
+                                    locationPokemon
+        ))
+        i+=1
+
     return locations
 
 def loadAll(data):
@@ -109,6 +159,5 @@ def loadAll(data):
     pokemon = loadPokemon(data,moves)
     gyms = loadGym(data,pokemon)
     locations = loadLocations(data,gyms,pokemon)
-    foo =""
     return pokemon,locations
     
