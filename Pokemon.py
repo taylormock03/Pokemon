@@ -6,6 +6,7 @@ from enum import Enum
 from Lib.Init.ObjectInit import *
 from Lib.Init.CharacterInit import *
 from Lib.Init.ItemInit import *
+from Lib.Gen.Starter import *
 
 ## Variable set up
 global Generation_Number
@@ -28,7 +29,6 @@ gamedata["pokeballs"] = 0
 ## made redundant 
 # gamedata["xp"] = []
 
-
 def firstload():
     ##I don't know why this needs to be redeclared since Generation_Number is already defined, but whatever
     global Generation_Number
@@ -36,8 +36,11 @@ def firstload():
     ##Figures out which save file needs to be loaded for the object Init file
     while True:
         Generation_Number = input("Which generation would you like to play?")
+        # Checks if the entered value is not a number
         if not Generation_Number.isdigit():
             print("invalid response")
+
+        # This will load the generation information
         else:
             global Generation
             with open('Generations/Generation_'+ Generation_Number +'.txt') as json_file:
@@ -49,17 +52,28 @@ def firstload():
             ##Figures out whether a savegame needs to be loaded
             start=input("Do you want to load a game? ")
             if start == "yes":
+
                 # creates the player object which stores all the session's data
                 player = loadPlayer(pokemon, Generation_Number,locations)
                 
+                # Generation data is no longer necessary as it has been loaded into objects
+                Generation = None
+
                 # obsoleted, keeping for testing purposes
                 load()
-                break
+
+
             elif start =="no":
                 if input("Are you sure? This will permanently delete all previous data ") =="yes":
-                    starter()
+                    # creates an empty player
+                    player = Player()
+                    starter(player,Generation,pokemon)
+                    # The generation value can now be removed, as it is no longer useful
+                    Generation = None
                     break
                 else:
+                    # If you ended up here, You decided not to start a new game and you will be 
+                    # re-prompted to choose a generation
                     print("")
             else:
                 print("invalid response")
@@ -80,47 +94,6 @@ def save():
         json.dump(gamedata, outfile, indent=1)
 
     print("Saved successfully")
-
-def starter():
-    global PcLevel
-    print("")
-    print("Welcome to the world of Pokemon. Today you will be given a choice of your first pokemon. Here are your choices")
-
-    print("#1 " + Generation["pokemon"][Generation["Starter1"][0]] + " Type: " + Generation["type_1"][Generation["Starter1"][0]] +" " + Generation["type_2"][Generation["Starter1"][0]])
-    print("#2 " + Generation["pokemon"][Generation["Starter2"][0]] + " Type: " + Generation["type_1"][Generation["Starter2"][0]] + " " + Generation["type_2"][Generation["Starter2"][0]])
-    print("#3 " + Generation["pokemon"][Generation["Starter3"][0]] + " Type: " + Generation["type_1"][Generation["Starter3"][0]] + " " + Generation["type_2"][Generation["Starter3"][0]])
-    while True:
-        starter = input("which number pokemon would you like ")
-        if starter == "1":
-            gamedata["Pc"].append(Generation["Starter1"][0])
-            gamedata["party"][0]=0
-            gamedata["PcLevel"].append(1)
-            print(Generation["pokemon"][gamedata["Pc"][0]]+ " a great choice!")
-            temp1=Generation["learnsets"][0].split("-")
-            gamedata["PcMoves"].append(temp1[0]+"-"+temp1[1])
-            gamedata["xp"].append(0)
-            break
-
-        elif starter == "2":
-            gamedata["Pc"].append(Generation["Starter2"][0])
-            gamedata["party"][0]=0
-            gamedata["PcLevel"].append(1)
-            print(Generation["pokemon"][gamedata["Pc"][0]]+ " a great choice!")
-            temp1=Generation["learnsets"][3].split("-")
-            gamedata["PcMoves"].append(temp1[0]+"-"+temp1[1])    
-            gamedata["xp"].append(0)        
-            break
-
-        elif starter == "3":
-            gamedata["Pc"].append(Generation["Starter3"][0])
-            gamedata["party"][0]=0
-            gamedata["PcLevel"].append(1)
-            print(Generation["pokemon"][gamedata["Pc"][0]]+ " a great choice!")
-            temp1=Generation["learnsets"][6].split("-")
-            gamedata["PcMoves"].append(temp1[0]+"-"+temp1[1])
-            gamedata["xp"].append(0)
-            break
-    print("With your new pokemon you are free to go into the wild. Remember, if you are ever lost just yell HELP")
 
 def buy():
     print("")
