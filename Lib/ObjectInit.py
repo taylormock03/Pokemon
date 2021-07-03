@@ -41,8 +41,14 @@ class Pokemon:
     def setLevel(self,level):
         self.__level = level
 
+    def getLevel(self):
+        return self.__level
+
     def setXp(self,xp):
         self.__xp = xp
+
+    def getXp(self):
+        return self.__xp
     
     def CalculateStats():
         return
@@ -53,6 +59,9 @@ class Pokemon:
             if move.id == id:
                 self.__moveset.append(move)
                 break
+
+    def getMoves(self):
+        return self.__moveset
         
 
 
@@ -78,11 +87,13 @@ class Location:
     name = ""
     gym = ""
     locationPokemon = []
+    id = ''
 
-    def __init__(self, name, gym, locationPokemon):
+    def __init__(self, name, gym, locationPokemon,id):
         self.name = name
         self.gym = gym
         self.locationPokemon = locationPokemon
+        self.id = id
 
 class GymTrainer:
     
@@ -166,7 +177,8 @@ def loadLocations(data,gyms,pokemon):
         locations.append(Location(
                                     x,
                                     gyms[i],
-                                    locationPokemon
+                                    locationPokemon,
+                                    i
         ))
         i+=1
 

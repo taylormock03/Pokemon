@@ -50,6 +50,7 @@ def firstload():
             if start == "yes":
                 player = loadPlayer(pokemon, Generation_Number,locations)
                 
+                savePlayer(player,Generation_Number)
                 # obsoleted, keeping for testing purposes
                 load()
                 break
