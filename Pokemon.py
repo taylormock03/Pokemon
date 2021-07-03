@@ -3,9 +3,9 @@ from pprint import pprint
 from random import randint
 import math
 from enum import Enum
-from Lib.ObjectInit import *
-from Lib.CharacterInit import *
-from Lib.ItemInit import *
+from Lib.Init.ObjectInit import *
+from Lib.Init.CharacterInit import *
+from Lib.Init.ItemInit import *
 
 ## Variable set up
 global Generation_Number
