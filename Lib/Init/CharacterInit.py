@@ -16,6 +16,9 @@ class Player:
         self.__money=money
         self.__items=items
 
+    def __init__(self):
+        pass
+
     def getLocationId(self):
         return self.__currentLocation.id
     
@@ -55,6 +58,14 @@ class Player:
                     partyPosition.append(index)
                 index+=1
         return partyPosition
+
+    def addPc(self,pokemon):
+        pokemon.setMoves()
+        
+        if len(self.__party)<6:
+            self.__party.append(pokemon)
+        else:
+            self.__pc.append(pokemon)
 
 # This will allow for the player to be loaded from the gamedata file
 # The file uses many pointers in a dictionary, so this function needs to 
@@ -99,6 +110,7 @@ def loadPlayer(pokemon,genNumber,location):
                     gamedata["BattleWon"],
                     gamedata["money"],
                     gamedata["pokeballs"])
+
 
 def savePlayer(player,genNumber):
     saveData={}

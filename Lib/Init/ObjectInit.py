@@ -53,15 +53,29 @@ class Pokemon:
     def CalculateStats():
         return
 
+    # This will add a single move based on an id that is passed through
     def setMoves(self,id):
         for move in self.learnsets:
             # if the id passed is equal to the move's id, they are the same move
             if move.id == id:
                 self.__moveset.append(move)
                 break
+    
+    # This will be used to set up a pokemon's initial moveset (this pretty much
+    # is only used when a pokemon does not have any moves such as at the beginning
+    # of the game with the starter pokemon)
+    def setMoves(self):
+        i=0
+        while len(self.__moveset)<4:
+            self.__moveset.append(self.learnsets[i])
+            i+=1
+        
 
     def getMoves(self):
         return self.__moveset
+
+    def __str__(self):
+        return ("Pokemon: " + self.name + "\n    Type 1: " + self.__type1 + "\n    Type 2: " + self.__type2)
         
 
 
