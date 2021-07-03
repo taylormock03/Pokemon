@@ -1,15 +1,15 @@
-
 import json
 from pprint import pprint
 from random import randint
 import math
 from enum import Enum
-from ObjectInit import *
+from Lib.ObjectInit import *
+from Lib.CharacterInit import *
 
 ## Variable set up
 global Generation_Number
 global pokemon
-global generations
+global player
 #Generation pokemon (it is obsoleted, but will be kept in until the data is sufficiently refactored)
 global Generation
 
@@ -42,12 +42,15 @@ def firstload():
             with open('Generations/Generation_'+ Generation_Number +'.txt') as json_file:
                 Generation = json.load(json_file)            
             
-            ##This is where the objects are initialised
+            ##This is where the game objects are initialised
             pokemon,locations = loadAll(Generation)
 
             ##Figures out whether a savegame needs to be loaded
             start=input("Do you want to load a game? ")
             if start == "yes":
+                player = loadPlayer(pokemon, Generation_Number,locations)
+                
+                # obsoleted, keeping for testing purposes
                 load()
                 break
             elif start =="no":

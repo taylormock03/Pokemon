@@ -1,4 +1,5 @@
 class Pokemon:
+    id=0
     name =""
     __type1 = ""
     __type2 = ""
@@ -8,7 +9,6 @@ class Pokemon:
     __speed = 0
     __status = ""
     __moveset = []
-    
     __nextEvolve = []
     __xp = 0
     __level = 1
@@ -18,7 +18,7 @@ class Pokemon:
     # and the moveset, xp and levels are generated at the time of an encounter
     # the learnsets don't have a fixed length, so it makes it easier to add through a seperate method
 
-    def __init__(self, name, type1,type2,hp,attack,defence,speed):
+    def __init__(self, name, type1,type2,hp,attack,defence,speed,id):
         self.name = name
         self.__type1 = type1
         self.__type2 = type2
@@ -27,6 +27,8 @@ class Pokemon:
         self.__defence = defence
         self.__speed = speed
         self.learnsets = []
+        self.__moveset = []
+        self.id=id
         return
 
     def addLearnset(self,move):
@@ -38,12 +40,25 @@ class Pokemon:
 
     def setLevel(self,level):
         self.__level = level
+
+    def setXp(self,xp):
+        self.__xp = xp
     
     def CalculateStats():
         return
 
+    def setMoves(self,id):
+        for move in self.learnsets:
+            # if the id passed is equal to the move's id, they are the same move
+            if move.id == id:
+                self.__moveset.append(move)
+                break
+        
+
+
 class Move:
     name = ""
+    id=0
     __accuracy = 0
     __damage = 0
     __type = ""
@@ -51,11 +66,12 @@ class Move:
     ##Currently no data exists in the generation files. This will hopefully be rectified, but not yet
     __status = None
 
-    def __init__(self, name, accuracy, damage, type):
+    def __init__(self, name, accuracy, damage, type,id):
         self.name = name
         self.__damage = damage
         self.__accuracy = accuracy
         self.__type = type
+        self.id=id
         return
 
 class Location:
@@ -90,6 +106,7 @@ def loadPokemon(data,moves):
                             data["attack"][i],
                             data["defence"][i],
                             data["speed"][i],
+                            i
                             ))
         learnset = data["learnsets"][i].split("-")
         for y in learnset:
@@ -116,7 +133,8 @@ def loadMoves(data):
         moveList.append(Move(x, 
                             data["accuracy"][i],
                             data["damage"][i],
-                            data["typeMove"][i]
+                            data["typeMove"][i],
+                            i
                             ))
         i+=1
     return moveList
