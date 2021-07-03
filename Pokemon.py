@@ -5,6 +5,7 @@ import math
 from enum import Enum
 from Lib.ObjectInit import *
 from Lib.CharacterInit import *
+from Lib.ItemInit import *
 
 ## Variable set up
 global Generation_Number
@@ -48,9 +49,9 @@ def firstload():
             ##Figures out whether a savegame needs to be loaded
             start=input("Do you want to load a game? ")
             if start == "yes":
+                # creates the player object which stores all the session's data
                 player = loadPlayer(pokemon, Generation_Number,locations)
                 
-                savePlayer(player,Generation_Number)
                 # obsoleted, keeping for testing purposes
                 load()
                 break
