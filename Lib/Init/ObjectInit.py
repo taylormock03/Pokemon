@@ -85,15 +85,17 @@ class Move:
     __accuracy = 0
     __damage = 0
     __type = ""
+    __pp = 0
 
     ##Currently no data exists in the generation files. This will hopefully be rectified, but not yet
     __status = None
 
-    def __init__(self, name, accuracy, damage, type,id):
+    def __init__(self, name, accuracy, damage, type,id,pp):
         self.name = name
         self.__damage = damage
         self.__accuracy = accuracy
         self.__type = type
+        self.__pp = pp
         self.id=id
         return
 
