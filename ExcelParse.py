@@ -51,6 +51,8 @@ for index,row in Learn_sets.iterrows():
     #print(row["pokemon_id"],row["move_id"])
     if index ==0:
         pass
+    if int(row[0]-1)>720:
+        row[0]=row[0]-9280 
     try:
         learnsets[row[0]-1].append(row[1]-1)
     except:
@@ -68,6 +70,9 @@ for index,row in Gym_Pokemon.iterrows():
 pokeTypes ={}
 previousSlot = -1
 for index,row in Pokemon_Types.iterrows():
+    if int(row[0]-1)>720:
+        row[0]=row[0]-9280 
+
     if row["slot"] == previousSlot:
         pokeTypes[previousId].append("None")
     
@@ -99,12 +104,13 @@ Generation["next_evolve"] = EvolveFrom
 Generation["PokemonType"] = pokeTypes
 Generation["pokemon"] = PokeNames
 
+'''
 Generation.pop("location")
 Generation.pop("Ai_health")
 Generation.pop("Player_health")
 Generation.pop("type_1")
 Generation.pop("type_2")
-
+'''
 with open('Generations/Generation_6.txt', 'w') as outfile:  
         json.dump(Generation, outfile, indent=1)
 print ("test")

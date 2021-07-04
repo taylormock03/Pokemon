@@ -1,3 +1,4 @@
+import numpy as np
 class Pokemon:
     id=0
     name =""
@@ -36,7 +37,7 @@ class Pokemon:
         return
 
     def setNextEvolve(self,evolution):
-        self.__nextEvolve=evolution
+        evolution.__nextEvolve = self
 
     def setLevel(self,level):
         self.__level = level
@@ -113,39 +114,42 @@ class Location:
 
 class GymTrainer:
     
-    def __init__(self):
-        self.pokemon = []
-
-    def addPokemon(self,pokemon,level):
-        pokemon.setLevel(level)
-        self.pokemon.append(pokemon)
-
+    def __init__(self,pokemon):
+        self.pokemon = pokemon
+        
 
 
 def loadPokemon(data,moves):
     pokeList = []
     i = 0
     for x in data["pokemon"]:
-        pokeList.append(Pokemon(x, 
-                            data["type_1"][i],
-                            data["type_2"][i],
-                            data["HP"][i],
-                            data["attack"][i],
-                            data["defence"][i],
-                            data["speed"][i],
-                            i
-                            ))
-        learnset = data["learnsets"][i].split("-")
-        for y in learnset:
-            pokeList[i].addLearnset(moves[int(y)])
-        i+=1
+        try:
+            pokeList.append(Pokemon(x, 
+                                data["PokemonType"][str(i)][0],
+                                data["PokemonType"][str(i)][1],
+                                data["HP"][i],
+                                data["attack"][i],
+                                data["defence"][i],
+                                data["speed"][i],
+                                i
+                                ))
+            try:
+                learnset = data["learnsets"][str(i)]
+                for y in learnset:
+                    pokeList[i].addLearnset(moves[int(y)])
+            except:
+                m=1
+            i+=1
+        
+        except:
+            break
     # This is where the next evolve will be added in. This had to be added last
     # as the next evolution would not have been created when we were initially 
     # creating the objects
     index=0
     for x in data["next_evolve"]:
-        if x != 0:
-            pokeList[index].setNextEvolve(pokeList[x])
+        if not np.isnan(x):
+            pokeList[index].setNextEvolve(pokeList[int(x)])
         index+=1
 
 
@@ -161,32 +165,37 @@ def loadMoves(data):
                             data["accuracy"][i],
                             data["damage"][i],
                             data["typeMove"][i],
-                            i
+                            i,
+                            data["pp"][i]
                             ))
         i+=1
     return moveList
 
 def loadGym(data,pokemon):
     gyms = []
+    
     i=0
     for x in data["TrainerPokemon"]:
-        gyms.append(GymTrainer())
-        lineUp= x.split("-")
-        lineUpLevel= data["TrainerLevel"][i].split("-")
+        lineUp = []
+        for PokeId in data["TrainerPokemon"][x]:
+            if not np.isnan(PokeId):
+                lineUp.append(pokemon[int(PokeId)-1])
+
+        levels = data["TrainerLevel"][i].split("-")
         y=0
-        for id in lineUp:
-            if id == "1000":
-                break
-            gyms[i].addPokemon(pokemon[int(id)],lineUpLevel[y])
+        for x in lineUp:
+            x.setLevel(int(levels[y]))
             y+=1
+        
+        gyms.append(GymTrainer(lineUp))
         i+=1
     return gyms
 
 def loadLocations(data,gyms,pokemon):
     locations = []
     i=0
-    for x in data["location"]:
-        locationPokemonId=data["LocationPokemon"][i].split("-")
+    for x in data["LocationPokemon"]:
+        locationPokemonId=data["LocationPokemon"][x]
         locationPokemon =[]
         for id in locationPokemonId:
             locationPokemon.append(pokemon[int(id)])
