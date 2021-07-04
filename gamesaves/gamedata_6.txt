@@ -1,0 +1,21 @@
+{
+ "party": [
+  0
+ ],
+ "Pc": [
+  649
+ ],
+ "PcLevel": [
+  1
+ ],
+ "xp": [
+  0
+ ],
+ "PcMoves": [
+  "13-14-21-32"
+ ],
+ "CurrentLocation": 0,
+ "BattleWon": 0,
+ "money": 0,
+ "pokeballs": []
+}

@@ -16,9 +16,6 @@ class Player:
         self.__money=money
         self.__items=items
 
-    def __init__(self):
-        pass
-
     def getLocationId(self):
         return self.__currentLocation.id
     
@@ -31,6 +28,8 @@ class Player:
     def getItems(self):
         return self.__items
 
+    # Turns the PC within a player object into an array of strings 
+    # that can be sent to the savefil
     def getPc(self):
         fullArray = self.__pc + self.__party
         fullId = []
@@ -60,7 +59,7 @@ class Player:
         return partyPosition
 
     def addPc(self,pokemon):
-        pokemon.setMoves()
+        pokemon.setInitMoves()
         
         if len(self.__party)<6:
             self.__party.append(pokemon)
@@ -94,6 +93,8 @@ def loadPlayer(pokemon,genNumber,location):
         i+=1
 
     # Assign party members
+    # This will act based on the pointers within the save file
+    # e.g party:0 means that the first pokemon in the pc is in the party
     party=[]
     indexOffset=0
     for x in gamedata["party"]:
@@ -101,9 +102,10 @@ def loadPlayer(pokemon,genNumber,location):
             pass
         else:
             party.append(pc[x+indexOffset])
+            # remove the pokemon from the party once it has been added to the pc
             pc.pop(x+indexOffset)
             indexOffset-=1
-
+    print("Loaded Successfully")
     return Player(  party,
                     pc,
                     location[gamedata["CurrentLocation"]],
@@ -125,5 +127,7 @@ def savePlayer(player,genNumber):
     saveData["BattleWon"]=player.getBattleWon()
     saveData["money"]=player.getMoney()
     saveData["pokeballs"] = player.getItems()
+
+    print("Saved Successfully")
     with open('gamesaves/gamedata_' + genNumber + '.txt', 'w') as outfile:  
         json.dump(saveData, outfile, indent=1)

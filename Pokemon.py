@@ -32,6 +32,7 @@ gamedata["pokeballs"] = 0
 def firstload():
     ##I don't know why this needs to be redeclared since Generation_Number is already defined, but whatever
     global Generation_Number
+    global player
 
     ##Figures out which save file needs to be loaded for the object Init file
     while True:
@@ -61,12 +62,13 @@ def firstload():
 
                 # obsoleted, keeping for testing purposes
                 load()
-
+                
+                break
 
             elif start =="no":
                 if input("Are you sure? This will permanently delete all previous data ") =="yes":
                     # creates an empty player
-                    player = Player()
+                    player = Player([],[],locations[0],0,0,[])
                     starter(player,Generation,pokemon)
                     # The generation value can now be removed, as it is no longer useful
                     Generation = None
@@ -1932,7 +1934,7 @@ while True:
         TrainerBattle()
 
     elif game == "save":
-        save()
+        savePlayer(player,Generation_Number)
 
     elif game == "load":
         load()

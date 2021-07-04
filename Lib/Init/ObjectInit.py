@@ -65,7 +65,8 @@ class Pokemon:
     # This will be used to set up a pokemon's initial moveset (this pretty much
     # is only used when a pokemon does not have any moves such as at the beginning
     # of the game with the starter pokemon)
-    def setMoves(self):
+    
+    def setInitMoves(self):
         i=0
         while len(self.__moveset)<4:
             self.__moveset.append(self.learnsets[i])
