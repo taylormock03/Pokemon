@@ -65,6 +65,26 @@ class Player:
             self.__party.append(pokemon)
         else:
             self.__pc.append(pokemon)
+    
+    # will show all pokemon within user's party
+    def printParty(self):
+        print("\nYOUR PARTY:")
+        i = 0
+        for x in self.__party:
+            print("#" + str(i) + " " + str(x))
+            i+=1
+        print()
+
+    # will show all pokemon within user's PC
+    def printPc(self):
+        print("\nYOUR PC:")
+        i = 0
+        for x in self.__pc:
+            print("#" + str(i) + " " + str(x))
+            i+=1
+        if i ==0:
+            print("There's nothing here")
+        print()
 
 # This will allow for the player to be loaded from the gamedata file
 # The file uses many pointers in a dictionary, so this function needs to 

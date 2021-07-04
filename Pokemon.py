@@ -1951,10 +1951,10 @@ while True:
         buy()
 
     elif game == "pc":
-        pc()
+        player.printPc()
 
     elif game =="party":
-        Party()
+        player.printParty()
 
     elif game =="location":
         LocationFind()
