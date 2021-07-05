@@ -14,6 +14,10 @@ class Pokemon:
     __xp = 0
     __level = 1
 
+    # Health is calculated as a function of the base HP and level
+    # This variable will store the health of the pokemon
+    __battleHealth = 0
+
     # NOTE: nextEvolve, moveset, learnsets, xp, and level are not included in this constructor
     # this is because next evolve won't work until all pokemon are already loaded
     # and the moveset, xp and levels are generated at the time of an encounter
@@ -30,6 +34,8 @@ class Pokemon:
         self.learnsets = []
         self.__moveset = []
         self.id=id
+        self.__level = 1
+        self.__battleHealth = 0
         return
 
     def addLearnset(self,move):
@@ -76,8 +82,10 @@ class Pokemon:
     def getMoves(self):
         return self.__moveset
 
+    # Prints out the pokemon and its stats 
+    # can be used as str(foo) where foo is a pokemon object
     def __str__(self):
-        return ("Pokemon: " + self.name + "\n    Type 1: " + self.__type1 + "\n    Type 2: " + self.__type2)
+        return ("Pokemon: " + self.name + " Lvl: " + str(self.__level) + "\n    Type 1: " + self.__type1 + "\n    Type 2: " + self.__type2)
         
 
 
@@ -89,6 +97,11 @@ class Move:
     __type = ""
     __pp = 0
 
+    # The __pp variable shows the base stat (the maximum number of uses)
+    # but the battlePp variable will decrement each fight and be reset at 
+    # the beginning of a new fight
+    __battlePp=0
+
     ##Currently no data exists in the generation files. This will hopefully be rectified, but not yet
     __status = None
 
@@ -99,6 +112,7 @@ class Move:
         self.__type = type
         self.__pp = pp
         self.id=id
+        self.__battlePp = 0
         return
 
 class Location:

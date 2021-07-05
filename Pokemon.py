@@ -1917,15 +1917,15 @@ while True:
     if game =="help":
         print("wild - spawns a random pokemon")
         print("trainer - starts a trainer fight (gym battle)")
-        print("save - saves your progress (only one save can be stored at one time")
-        print("load - loads your last save. (all unsaved progress will be lost)")
-        print("quit - will quit your game (all unsaved progress will be lost)")
+        print("save - saves your progress (only one save can be stored at one time") #Completed
+        print("load - loads your last save. (all unsaved progress will be lost)") #Completed
+        print("quit - will quit your game (all unsaved progress will be lost)") #Completed
         print("buy - will buy a pokeball for $200")
-        print("pc - will allow you to view and change the pokemon in your PC")
-        print("party - will allow you to view your party pokemon and their stats")
+        print("pc - will allow you to view and change the pokemon in your PC") #Completed
+        print("party - will allow you to view your party pokemon and their stats") #Completed
         print("location - will show you your location, what pokemon can spawn there, and allow you to travel to other towns (as long as you have won enough battles to do so)")
         print("money - will show you your current money")
-        print("order - allows you to rearrange your party")
+        print("arrange - allows you to rearrange your party or swap your party pokemon with ones in your PC") #Completed
 
     elif game == "wild":
         PokeBattle()
@@ -1942,7 +1942,7 @@ while True:
     elif game == "quit":
         game=input("Would you like to save first? ")
         if game =="yes":
-            save()
+            savePlayer(player,Generation_Number)
             break
         elif game == "no":
             break
@@ -1966,7 +1966,16 @@ while True:
         debug()
 
     elif game =="order":
-        PartyOrder()
+        while True:
+            check = input("\nWould you like to swap your party order (party) or put your pc pokemon into your party (pc)? ")
+            if check == "party":
+                player.partyOrder()
+                break
+            elif check == "pc":
+                player.pcOrder()
+                break
+            else:
+                print("Invalid entry")
 
     else:
         print("invalid response (input 'help' for a list of commands. This is available on almost any screen)")

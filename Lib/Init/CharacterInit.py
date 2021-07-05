@@ -86,6 +86,74 @@ class Player:
             print("There's nothing here")
         print()
 
+    # The order of the party can be changed
+    # e.g [1,2,3] will become [1,3,2]
+    def partyOrder(self):
+        self.printParty()
+
+        # Select the index of the first pokemon within the party
+        while True:
+            try:
+                swap1 = int(input("\nWhat is your first pokemon you would like to swap? "))
+
+                # Checks if the chosen number is larger than the party size
+                if swap1>=len(self.__party):
+                    raise
+                break
+            except:
+                print("Invalid entry")
+        
+        # Select the index of the second pokemon within the party
+        while True:
+            try:
+                swap2 = int(input("\nWhat is your first pokemon you would like to swap? "))
+                # Checks if the chosen number is larger than the party size or is the same as the previous number
+                if swap2>=len(self.__party):
+                    raise
+                break
+            except:
+                print("Invalid entry")
+
+        # swaps pokemon here
+        tempPokemon = self.__party[swap1]
+        self.__party[swap1] = self.__party[swap2]
+        self.__party[swap2] = tempPokemon
+
+        print("Swapped Successfully!")
+
+    # allows pokemon within the pc to trade places with the party pokemon
+    def pcOrder(self):
+        self.printParty()
+
+        # Select the index of the  pokemon within the party
+        while True:
+            try:
+                swap1 = int(input("\nWhich party pokemon would you like to swap out? "))
+
+                # Checks if the chosen number is larger than the max party size (6)
+                if swap1>=6:
+                    raise
+                break
+            except:
+                print("Invalid entry")
+
+        self.printPc()
+
+        # Select the index of the first pokemon within the party
+        while True:
+            try:
+                swap2 = int(input("\nWhich PC pokemon would you like to swap in? "))
+
+                # Checks if the chosen number is larger than the pc size
+                if swap2>=len(self.__pc):
+                    raise
+                break
+            except:
+                print("Invalid entry")
+
+        return
+
+
 # This will allow for the player to be loaded from the gamedata file
 # The file uses many pointers in a dictionary, so this function needs to 
 # parse it so that it can be used
