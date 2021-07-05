@@ -1,3 +1,4 @@
+from Lib.Init.ItemInit import CatchItem, HealItem, StatusItem
 import json
 from random import randint
 import math
@@ -28,7 +29,12 @@ class Player:
         return self.__money
     
     def getItems(self):
-        return self.__items
+        itemDict ={}
+        i=0
+        for x in self.__items:
+            itemDict[i] = x.saveValues()
+            i+=1
+        return itemDict
 
     # Turns the PC within a player object into an array of strings 
     # that can be sent to the savefil
@@ -216,14 +222,15 @@ class Player:
         # This is checking if an item of the same name exists already
         # if it does, the new quantity will be added on top of the existing
         # quantity of items
+        found = False
         for x in self.__items:
             if x.name == item.name:
-                x.quantity += item.quantity
+                found=True
                 break
-        
-        # If this line gets run, it means that the user does not have
-        # any of that item and it will be added onto the end of the __items list
-        self.__items.append(item)
+        if not found:
+            # If this line gets run, it means that the user does not have
+            # any of that item and it will be added onto the end of the __items list
+            self.__items.append(item)
 
     def addMoney(self,amount):
         self.__money +=amount
@@ -234,6 +241,38 @@ def loadPlayer(pokemon,genNumber,location):
     with open('gamesaves/gamedata_'+ genNumber +'.txt') as json_file:
         gamedata = json.load(json_file)
     
+    # Load in the items
+    items = []
+    for x in gamedata["Items"]:
+        x = gamedata["Items"][x]
+        if x["Class"] == "CatchItem":
+            newObject = CatchItem(
+                                    x["name"],
+                                    x["cost"],
+                                    x["ballBonus"],
+                                            )
+            newObject.quantity = x["quantity"]
+            items.append(newObject)
+
+        elif x["Class"] == "HealItem":
+            newObject = HealItem(
+                                    x["name"],
+                                    x["cost"],
+                                    x["healBonus"],
+                                            )
+            newObject.quantity = x["quantity"]
+            items.append(newObject)
+
+        elif x["Class"] == "StatusItem":
+            newObject = StatusItem(
+                                    x["name"],
+                                    x["cost"],
+                                    x["status"],
+                                            )
+            newObject.quantity = x["quantity"]
+            items.append(newObject)
+
+
     pc = []
     i=0
     # load in the pokemon within the player's PC
@@ -272,7 +311,7 @@ def loadPlayer(pokemon,genNumber,location):
                     location[gamedata["CurrentLocation"]],
                     gamedata["BattleWon"],
                     gamedata["money"],
-                    gamedata["pokeballs"])
+                    items)
 
 
 def savePlayer(player,genNumber):
@@ -287,7 +326,7 @@ def savePlayer(player,genNumber):
     saveData["CurrentLocation"]=player.getLocationId()
     saveData["BattleWon"]=player.getBattleWon()
     saveData["money"]=player.getMoney()
-    saveData["pokeballs"] = player.getItems()
+    saveData["Items"] = player.getItems()
 
     print("Saved Successfully")
     with open('gamesaves/gamedata_' + genNumber + '.txt', 'w') as outfile:  

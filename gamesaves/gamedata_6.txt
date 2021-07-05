@@ -16,6 +16,28 @@
  ],
  "CurrentLocation": 0,
  "BattleWon": 0,
- "money": 0,
- "pokeballs": []
+ "money": 500,
+ "Items": {
+  "0": {
+   "Class": "StatusItem",
+   "status": "Burn",
+   "name": "Burn Heal",
+   "cost": 100,
+   "quantity": 1
+  },
+  "1": {
+   "Class": "CatchItem",
+   "ballBonus": 1,
+   "name": "Poke Ball",
+   "cost": 100,
+   "quantity": 1
+  },
+  "2": {
+   "Class": "HealItem",
+   "healBonus": 1,
+   "name": "Potion",
+   "cost": 100,
+   "quantity": 1
+  }
+ }
 }
