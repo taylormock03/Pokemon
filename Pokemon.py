@@ -12,6 +12,7 @@ from Lib.Gen.Starter import *
 global Generation_Number
 global pokemon
 global player
+global locations
 #Generation pokemon (it is obsoleted, but will be kept in until the data is sufficiently refactored)
 global Generation
 
@@ -33,7 +34,7 @@ def firstload():
     ##I don't know why this needs to be redeclared since Generation_Number is already defined, but whatever
     global Generation_Number
     global player
-
+    global locations
     ##Figures out which save file needs to be loaded for the object Init file
     while True:
         Generation_Number = input("Which generation would you like to play?")
@@ -1923,7 +1924,7 @@ while True:
         print("buy - will buy a pokeball for $200")
         print("pc - will allow you to view and change the pokemon in your PC") #Completed
         print("party - will allow you to view your party pokemon and their stats") #Completed
-        print("location - will show you your location, what pokemon can spawn there, and allow you to travel to other towns (as long as you have won enough battles to do so)")
+        print("location - will show you your location, what pokemon can spawn there, and allow you to travel to other towns (as long as you have won enough battles to do so)") #completed
         print("money - will show you your current money")
         print("arrange - allows you to rearrange your party or swap your party pokemon with ones in your PC") #Completed
 
@@ -1957,7 +1958,20 @@ while True:
         player.printParty()
 
     elif game =="location":
-        LocationFind()
+        player.printLocation()
+
+        while True:
+            travel = input("\nWould you like to travel? ")
+            if travel == "yes":
+                player.travelLocation(locations)
+                break
+
+            elif travel == "no":
+                break
+
+            else:
+                print("Invalid entry")
+
 
     elif game =="money":
         print("you have $" + str(gamedata["money"]))

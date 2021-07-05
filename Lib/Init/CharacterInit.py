@@ -86,6 +86,11 @@ class Player:
             print("There's nothing here")
         print()
 
+    # This will show the player where they are and what they can catch
+    def printLocation(self):
+        print(str(self.__currentLocation))
+
+
     # The order of the party can be changed
     # e.g [1,2,3] will become [1,3,2]
     def partyOrder(self):
@@ -152,6 +157,26 @@ class Player:
                 print("Invalid entry")
 
         return
+
+    # This will show where the player can travel and move them
+    def travelLocation(self,locations):
+        print("You can travel to: ")
+        i = 0
+        while i<=self.__battleWon:
+            print("#" + str(i) + " " +locations[i].name)
+            i+=1
+
+        while True:
+            try:
+                destination = int(input("Which Town would you like to visit? "))
+                if destination >= i or destination<0:
+                    raise
+                
+                print("You are now at: " + locations[destination].name) 
+                self.__currentLocation = locations[destination]
+                break
+            except:
+                print("Invalid entry")
 
 
 # This will allow for the player to be loaded from the gamedata file

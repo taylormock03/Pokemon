@@ -127,6 +127,16 @@ class Location:
         self.locationPokemon = locationPokemon
         self.id = id
 
+    def __str__(self):
+        string = "\nYou are in: " + self.name + '\nYou can catch:'
+
+        printedPokemon = []
+        for x in self.locationPokemon:
+            if x not in printedPokemon:
+                string+=("\n" + str(x))
+                printedPokemon.append(x)
+        return string
+
 class GymTrainer:
     
     def __init__(self,pokemon):
