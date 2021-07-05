@@ -23,12 +23,14 @@ class Pokemon:
     __battleAttack = 0
     __battleDefence = 0
     __battleSpeed = 0
-    # NOTE: nextEvolve, moveset, learnsets, xp, and level are not included in this constructor
+    # NOTE: moveset, xp, and level are not included in this constructor
     # this is because next evolve won't work until all pokemon are already loaded
     # and the moveset, xp and levels are generated at the time of an encounter
     # the learnsets don't have a fixed length, so it makes it easier to add through a seperate method
+    # during initial loading, learnsets and next evolve will be blank, but will be passed a value
+    # when creating a clone
 
-    def __init__(self, name, type1,type2,hp,attack,defence,speed,id):
+    def __init__(self, name, type1,type2,hp,attack,defence,speed,id,learnsets,nextEvolve):
         self.name = name
         self.__type1 = type1
         self.__type2 = type2
@@ -36,8 +38,9 @@ class Pokemon:
         self.__attack = attack
         self.__defence = defence
         self.__speed = speed
-        self.learnsets = []
+        self.learnsets = learnsets
         self.__moveset = []
+        self.__nextEvolve = nextEvolve
         self.id=id
         self.__level = 1
         self.__battleHealth = 0
@@ -45,6 +48,11 @@ class Pokemon:
         self.__battleDefence = 0
         self.__battleSpeed = 0
         return
+
+    # Because the pokemon exist as templates on a list, I need to create new pokemon objects with the same data
+    # This function will pass all of the data
+    def clone(self):
+        return self.name,self.__type1,self.__type2,self.__hp,self.__attack,self.__defence,self.__speed,self.id,self.learnsets,self.__nextEvolve
 
     def addLearnset(self,move):
         self.learnsets.append(move)
@@ -77,6 +85,8 @@ class Pokemon:
         for move in self.learnsets:
             # if the id passed is equal to the move's id, they are the same move
             if move.id == id:
+                name, accuracy, damage, type, id, pp, status = move.clone()
+                newMove= Move(name, accuracy, damage, type, id, pp, status)
                 self.__moveset.append(move)
                 break
     
@@ -138,6 +148,10 @@ class Move:
         self.__status = status
         return
 
+    # returns the data within the object so a new move can be created (see pokemon.clone())
+    def clone(self):
+        return self.name, self.__accuracy, self.__damage, self.__type,self.id,self.__pp,self.__status
+
 class Location:
     name = ""
     gym = ""
@@ -187,7 +201,9 @@ def loadPokemon(data,moves):
                                 data["attack"][i],
                                 data["defence"][i],
                                 data["speed"][i],
-                                i
+                                i,
+                                learnsets=[],
+                                nextEvolve=[]
                                 ))
             try:
                 learnset = data["learnsets"][str(i)]

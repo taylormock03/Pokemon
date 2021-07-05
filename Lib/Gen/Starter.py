@@ -1,3 +1,6 @@
+from Lib.Init.ObjectInit import Pokemon
+
+
 def starter(player,data, pokemon):
 
     # Finds the starter pokemon IDs from the Json file
@@ -9,7 +12,9 @@ def starter(player,data, pokemon):
 
     # compiles the starters into pokemon objects
     for x in starterId:
-        starterPokemon.append(pokemon[int(x)])
+        name, type1, type2, hp, attack, defence, speed, id, learnsets, nextEvolve= pokemon[int(x)].clone()
+        newPokemon = Pokemon(name, type1, type2, hp, attack, defence, speed, id, learnsets, nextEvolve)
+        starterPokemon.append(newPokemon)
     
     print("")
     print("Welcome to the world of Pokemon. Today you will be given a choice of your first pokemon. Here are your choices")

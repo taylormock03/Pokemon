@@ -1790,12 +1790,6 @@ while True:
         savePlayer(player,Generation_Number)
 
     elif game == "load":
-        player = None
-        pokemon = None
-        locations = None
-        with open('Generations/Generation_'+ Generation_Number +'.txt') as json_file:
-                Generation = json.load(json_file)  
-        pokemon,locations=loadAll(Generation)
         player = loadPlayer(pokemon,Generation_Number,locations)
 
     elif game == "quit":

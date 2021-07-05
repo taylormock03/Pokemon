@@ -1,3 +1,4 @@
+from Lib.Init.ObjectInit import Pokemon
 from Lib.Init.ItemInit import CatchItem, HealItem, StatusItem
 import json
 from random import randint
@@ -278,7 +279,9 @@ def loadPlayer(pokemon,genNumber,location):
     # load in the pokemon within the player's PC
     for id in gamedata["Pc"]:
         # loads in pokemon object
-        pc.append(pokemon[int(id)])
+        name, type1, type2, hp, attack, defence, speed, id,learnsets,nextEvolve =pokemon[int(id)].clone()
+        newPokemon= Pokemon(name, type1, type2, hp, attack, defence, speed, id, learnsets,nextEvolve)
+        pc.append(newPokemon)
 
         # sets pokemon object's level
         pc[i].setLevel(gamedata["PcLevel"][i])
