@@ -120,6 +120,23 @@ class Pokemon:
         self.__battleDefence = round(((((2*self.__defence)+ iv + (ev/4)) * self.__level)/100 )+5)
         self.__battleSpeed = round(((((2*self.__speed)+ iv + (ev/4)) * self.__level)/100 )+5)
 
+        for x in self.__moveset:
+            x.battleInit()
+
+    # This will give the pokemon 4 random moves from within its learnsets
+    def randomMoves(self):
+        i=0
+        while i<4:
+            # Chooses a random move within learnsets
+            movePos = randint(0,len(self.learnsets))
+            
+            # clones it here so a new instance of each move can be istantiated
+            name, accuracy, damage, type, id, pp, status =self.learnsets[movePos].clone()
+            newMove = Move(name, accuracy, damage, type, id, pp, status)
+            
+            # adds it to the moveset
+            self.__moveset.append(newMove)
+            i+=1
 
 class Move:
     name = ""
@@ -151,6 +168,10 @@ class Move:
     # returns the data within the object so a new move can be created (see pokemon.clone())
     def clone(self):
         return self.name, self.__accuracy, self.__damage, self.__type,self.id,self.__pp,self.__status
+
+    # sets PP of moves
+    def battleInit(self):
+        self.__battlePp = self.__pp
 
 class Location:
     name = ""
@@ -186,6 +207,7 @@ class GymTrainer:
     # This will set up all the battle stats for the gym leader
     def battleInit(self):
         for x in self.pokemon:
+            x.randomMoves()
             x.battleInit()
 
 
@@ -252,7 +274,9 @@ def loadGym(data,pokemon):
         lineUp = []
         for PokeId in data["TrainerPokemon"][x]:
             if not np.isnan(PokeId):
-                lineUp.append(pokemon[int(PokeId)-1])
+                name, type1, type2, hp, attack, defence, speed, id, learnsets, nextEvolve =pokemon[int(PokeId)-1].clone()
+                newPokemon = Pokemon(name, type1, type2, hp, attack, defence, speed, id, learnsets, nextEvolve)
+                lineUp.append(newPokemon)
 
         levels = data["TrainerLevel"][i].split("-")
         y=0

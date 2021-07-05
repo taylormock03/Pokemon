@@ -190,15 +190,23 @@ class Player:
     def getEncounter(self):
         # chooses a random pokemon from the pokemon in the location
         encounterPokemon = self.__currentLocation.getEncounter()
-
+        name, type1, type2, hp, attack, defence, speed, id, learnsets, nextEvolve= encounterPokemon.clone()
+        
+        # The encounter pokemon is a pointer to the pokemon in the pokemon list
+        # If I don't run this line, anything that happens to encounterPokemon,
+        # will happen to the pokemon within the pokemon list
+        newPokemon = Pokemon(name, type1, type2, hp, attack, defence, speed, id, learnsets, nextEvolve)
         # set level of pokemon within +- 10% of player's first party pokemon's
         level = self.getPartyLevel()
-        encounterPokemon.setLevel(level)
+        newPokemon.setLevel(level)
+
+        # set the moves of the pokemon
+        newPokemon.randomMoves()
 
         # set the health and pp of the wild pokemon
-        encounterPokemon.battleInit()
+        newPokemon.battleInit()
 
-        return [encounterPokemon]
+        return [newPokemon]
 
     # gets a random level within 10% of the first pokemon in the party
     def getPartyLevel(self):

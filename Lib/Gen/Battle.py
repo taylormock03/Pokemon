@@ -8,8 +8,8 @@ def wildBattleInit(player):
     
     # initialises all battle stats for the player
     player.battleInit()
-    print("You encountered a wild: " + str(wildPokemon[0]))
-    battle(player,wildPokemon)
+    print("You encountered a wild:\n" + str(wildPokemon[0]))
+    battle(player,wildPokemon,False)
     
 def trainerBattleInit(player):
     # Loads the gym leader from the player's current location and initialises stats
@@ -19,7 +19,7 @@ def trainerBattleInit(player):
     # initialises all battle stats for the player
     player.battleInit()
 
-    battle(player, trainer.pokemon)
+    battle(player, trainer.pokemon,True)
 
 # This is the main function for battling
 # gymFight is a boolean that tells the program if you are fighting a gym trainer
@@ -29,7 +29,7 @@ def battle(player,ai,gymFight):
     while True:
         while True:
             try:
-                selection = int(input("What would you like to do ?\n#1 Attack\n#2 Switch Pokemon\n#3 Items \n#4 Run"))
+                selection = int(input("What would you like to do ?\n#1 Attack\n#2 Switch Pokemon\n#3 Items \n#4 Run\n>"))
                 if selection >4 or selection<1:
                     raise
                 break
