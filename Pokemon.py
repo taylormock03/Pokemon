@@ -7,6 +7,7 @@ from Lib.Init.ObjectInit import *
 from Lib.Init.CharacterInit import *
 from Lib.Init.ItemInit import *
 from Lib.Gen.Starter import *
+from Lib.Gen.Battle import *
 
 ## Variable set up
 global Generation_Number
@@ -1929,10 +1930,10 @@ while True:
         print("arrange - allows you to rearrange your party or swap your party pokemon with ones in your PC") #Completed
 
     elif game == "wild":
-        PokeBattle()
+        wildBattleInit(player)
 
     elif game == "trainer":
-        TrainerBattle()
+        trainerBattleInit(player)
 
     elif game == "save":
         savePlayer(player,Generation_Number)

@@ -1,4 +1,6 @@
 import json
+from random import randint
+import math
 
 class Player:
     __party=[]
@@ -178,7 +180,36 @@ class Player:
             except:
                 print("Invalid entry")
 
+    def getEncounter(self):
+        # chooses a random pokemon from the pokemon in the location
+        encounterPokemon = self.__currentLocation.getEncounter()
 
+        # set level of pokemon within +- 10% of player's first party pokemon's
+        level = self.getPartyLevel()
+        encounterPokemon.setLevel(level)
+
+        # set the health and pp of the wild pokemon
+        encounterPokemon.battleInit()
+
+        return [encounterPokemon]
+
+    # gets a random level within 10% of the first pokemon in the party
+    def getPartyLevel(self):
+        originalLevel=self.__party[0].getLevel()
+        newLevel = randint(
+            round(originalLevel*0.9),
+            round(originalLevel*1.1)
+        )
+        return newLevel
+
+    # This will run the battleInit method within the pokemon class
+    # for every pokemon within the player's party
+    def battleInit(self):
+        for x in self.__party:
+            x.battleInit()
+
+    def getGym(self):
+        return self.__currentLocation.gym
 # This will allow for the player to be loaded from the gamedata file
 # The file uses many pointers in a dictionary, so this function needs to 
 # parse it so that it can be used

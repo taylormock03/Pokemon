@@ -31,6 +31,7 @@ MovePower = moves["power"].tolist()
 MovePP = moves["pp"].tolist()
 MoveAccuracy = moves["accuracy"].tolist()
 EvolveFrom =Next_evolve["evolves_from_species_id"].tolist()
+MoveEffect = moves["Move_Effect"].tolist()
 
 i=0
 for x in EvolveFrom:
@@ -90,6 +91,7 @@ with open('Generations/Generation_6.txt') as json_file:
 
 Generation["moveset"] = MoveNames
 Generation["typeMove"] = MoveTypes
+Generation["moveEffect"] = MoveEffect
 Generation["TrainerPokemon"] = Gyms
 Generation["LocationPokemon"] = locations
 Generation["learnsets"] = learnsets

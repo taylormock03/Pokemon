@@ -1,4 +1,6 @@
 import numpy as np
+from random import randint
+
 class Pokemon:
     id=0
     name =""
@@ -16,8 +18,11 @@ class Pokemon:
 
     # Health is calculated as a function of the base HP and level
     # This variable will store the health of the pokemon
+    # this applies to all stats
     __battleHealth = 0
-
+    __battleAttack = 0
+    __battleDefence = 0
+    __battleSpeed = 0
     # NOTE: nextEvolve, moveset, learnsets, xp, and level are not included in this constructor
     # this is because next evolve won't work until all pokemon are already loaded
     # and the moveset, xp and levels are generated at the time of an encounter
@@ -36,6 +41,9 @@ class Pokemon:
         self.id=id
         self.__level = 1
         self.__battleHealth = 0
+        self.__battleAttack = 0
+        self.__battleDefence = 0
+        self.__battleSpeed = 0
         return
 
     def addLearnset(self,move):
@@ -57,6 +65,10 @@ class Pokemon:
     def getXp(self):
         return self.__xp
     
+    # return battle health (note: not HP, these are two seperate values)
+    def getHealth(self):
+        return self.__battleHealth
+
     def CalculateStats():
         return
 
@@ -87,6 +99,16 @@ class Pokemon:
     def __str__(self):
         return ("Pokemon: " + self.name + " Lvl: " + str(self.__level) + "\n    Type 1: " + self.__type1 + "\n    Type 2: " + self.__type2)
         
+    # calculates the Health and PP of the pokemon for battles
+    def battleInit(self):
+        ev = 181
+        iv = 24
+        # this calculation comes from bulbapedia
+        self.__battleHealth = round((((2*self.__hp)+ iv + (ev/4))/100)+self.__level+10)
+
+        self.__battleAttack = round(((((2*self.__attack)+ iv + (ev/4)) * self.__level)/100 )+5 )
+        self.__battleDefence = round(((((2*self.__defence)+ iv + (ev/4)) * self.__level)/100 )+5)
+        self.__battleSpeed = round(((((2*self.__speed)+ iv + (ev/4)) * self.__level)/100 )+5)
 
 
 class Move:
@@ -102,10 +124,10 @@ class Move:
     # the beginning of a new fight
     __battlePp=0
 
-    ##Currently no data exists in the generation files. This will hopefully be rectified, but not yet
+    # This stores if this move does anything special e.g burn the target, heal user, etc.
     __status = None
 
-    def __init__(self, name, accuracy, damage, type,id,pp):
+    def __init__(self, name, accuracy, damage, type,id,pp,status):
         self.name = name
         self.__damage = damage
         self.__accuracy = accuracy
@@ -113,6 +135,7 @@ class Move:
         self.__pp = pp
         self.id=id
         self.__battlePp = 0
+        self.__status = status
         return
 
 class Location:
@@ -137,11 +160,19 @@ class Location:
                 printedPokemon.append(x)
         return string
 
+    def getEncounter(self):
+        randomIndex = randint(0,len(self.locationPokemon)-1)
+        return self.locationPokemon[randomIndex]
+
 class GymTrainer:
     
     def __init__(self,pokemon):
         self.pokemon = pokemon
         
+    # This will set up all the battle stats for the gym leader
+    def battleInit(self):
+        for x in self.pokemon:
+            x.battleInit()
 
 
 def loadPokemon(data,moves):
@@ -191,7 +222,8 @@ def loadMoves(data):
                             data["damage"][i],
                             data["typeMove"][i],
                             i,
-                            data["pp"][i]
+                            data["pp"][i],
+                            data["moveEffect"][i]
                             ))
         i+=1
     return moveList
