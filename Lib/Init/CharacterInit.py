@@ -210,6 +210,23 @@ class Player:
 
     def getGym(self):
         return self.__currentLocation.gym
+
+    # This will add bought items into the player's __item list
+    def addInventory(self,item):
+        # This is checking if an item of the same name exists already
+        # if it does, the new quantity will be added on top of the existing
+        # quantity of items
+        for x in self.__items:
+            if x.name == item.name:
+                x.quantity += item.quantity
+                break
+        
+        # If this line gets run, it means that the user does not have
+        # any of that item and it will be added onto the end of the __items list
+        self.__items.append(item)
+
+    def addMoney(self,amount):
+        self.__money +=amount
 # This will allow for the player to be loaded from the gamedata file
 # The file uses many pointers in a dictionary, so this function needs to 
 # parse it so that it can be used

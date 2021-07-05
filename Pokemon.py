@@ -8,6 +8,7 @@ from Lib.Init.CharacterInit import *
 from Lib.Init.ItemInit import *
 from Lib.Gen.Starter import *
 from Lib.Gen.Battle import *
+from Lib.Gen.Store import *
 
 ## Variable set up
 global Generation_Number
@@ -17,25 +18,13 @@ global locations
 #Generation pokemon (it is obsoleted, but will be kept in until the data is sufficiently refactored)
 global Generation
 
-##gamesaves
-gamedata={}
-gamedata["party"] = ["","","","","",""]
-gamedata["Pc"]=[]
-gamedata["PcLevel"]=[]
-gamedata["CurrentLocation"] = 0
-gamedata["PcMoves"] = []
-gamedata["BattleWon"]=0
-gamedata["money"]=0
-gamedata["pokeballs"] = 0
-
-## made redundant 
-# gamedata["xp"] = []
 
 def firstload():
     ##I don't know why this needs to be redeclared since Generation_Number is already defined, but whatever
     global Generation_Number
     global player
     global locations
+    global pokemon
     ##Figures out which save file needs to be loaded for the object Init file
     while True:
         Generation_Number = input("Which generation would you like to play?")
@@ -60,11 +49,7 @@ def firstload():
                 player = loadPlayer(pokemon, Generation_Number,locations)
                 
                 # Generation data is no longer necessary as it has been loaded into objects
-                Generation = None
-
-                # obsoleted, keeping for testing purposes
-                load()
-                
+                Generation = None            
                 break
 
             elif start =="no":
@@ -82,22 +67,6 @@ def firstload():
             else:
                 print("invalid response")
 
-## Load Gamesave
-def load():
-    global Generation_Number
-    global gamedata
-    with open('gamesaves/gamedata_'+ Generation_Number +'.txt') as json_file:
-        gamedata = json.load(json_file)
-
-    print("Loaded successfully")
-
-## Save Gamesave
-def save():
-    global Generation_Number
-    with open('gamesaves/gamedata_' + Generation_Number + '.txt', 'w') as outfile:  
-        json.dump(gamedata, outfile, indent=1)
-
-    print("Saved successfully")
 
 def buy():
     print("")
@@ -200,124 +169,6 @@ def buy():
                         print("invalid response")
 
 
-    print("")
-
-def LocationFind():
-    temp2=[]
-    print("")
-    temp1=Generation["LocationPokemon"][gamedata["CurrentLocation"]].split("-")
-    for x in temp1:
-        temp2.append(Generation["pokemon"][int(x)])
-    print("Current Location: " + Generation["location"][gamedata["CurrentLocation"]])
-    print("")
-    print("Here you can find:")
-    for x in temp2:
-        print(x)
-    print("")
-
-    game = input("Would you like to travel? ")
-    if game == "yes":
-        i=0
-        for x in Generation["location"]:
-            print("#" + str(i)+":" + x)
-            i+=1
-        game = int(input("Where would you like to travel? (int only)" ))
-        if gamedata["BattleWon"] >= game:
-            gamedata["CurrentLocation"] = game
-            print("You travelled to " + Generation["location"][gamedata["CurrentLocation"]])
-            print("")
-        else: 
-            print("You have not yet won enough gym battles to get there yet. ")
-            print("")
-
-    else:
-        print("")
-
-def debug():
-    print(Generation)
-
-def Party():
-    print("")
-    i=0
-    for x in gamedata["party"]:
-        if x != "":
-            temp = gamedata["Pc"][x]
-            print("#" +str(i))
-            print ("Pokemon: " + Generation["pokemon"][temp]) 
-            print("Level: " + str(gamedata["PcLevel"][x]))
-            print("Type: " + Generation["type_1"][temp] + " " + Generation["type_2"][temp])
-            
-            temp2 = gamedata["PcMoves"][x].split("-")
-            for z in temp2:
-                print("Move learnt: " + Generation["moveset"][int(z)])
-
-            print("")
-            i+=1
-
-def PartyOrder():
-    Party()
-    Pokemon1 = input("What is your first pokemon you want to swap out?")
-    Pokemon2 = input("What is your second pokemon you want to swap out?")
-
-    Party1 = gamedata["party"][int(Pokemon1)] 
-    Party2 = gamedata["party"][int(Pokemon2)]
-
-    gamedata["party"][int(Pokemon1)] = Party2
-    gamedata["party"][int(Pokemon2)] = Party1
-
-    print("successfully swapped pokemon!")
-
-def pc():
-    print("")
-    i=0
-    print("Party:")
-    Party()
-    
-    print("PC:")
-    print("")
-    
-    for x in gamedata["Pc"]:
-        print("#"+str(i))
-        print('pokemon: ' + Generation["pokemon"][x])
-        print('Level: ' + str(gamedata["PcLevel"][i]))
-        print("Type: " + Generation["type_1"][x] + " " + Generation["type_2"][x])
-        temp = gamedata["PcMoves"][i].split("-")
-        for z in temp:
-            print("Move learnt: " + Generation["moveset"][int(z)])
-        i+=1
-        print("")
-
-    print("")
-    while True:
-        game = int(input("Which party pokemon would you like to switch out? "))
-        print("")
-        
-        if game <= -1:
-            break
-
-        game2 = int(input("Which PC pokemon would you like to put in? "))
-        print("")
-
-        if game2 in gamedata["party"]:
-            print("That pokemon is already in the party")
-        
-        elif game>5:
-            print("You can't have that many party pokemon")
-
-        elif game2>len(gamedata["party"]):
-            print("Pokemon not found")
-
-        else:
-            if gamedata["party"][game]!= "":
-                temp = gamedata["party"][game]
-                print(Generation["pokemon"][gamedata["Pc"][game2]] + " replaces " + Generation["pokemon"][gamedata["Pc"][temp]])
-            gamedata["party"][game] = game2
-
-
-        print("")
-        game = input("would you like to leave?" )
-        if game =="yes":
-            break
     print("")
 
 def PokeBattle():
@@ -1917,8 +1768,8 @@ print("Game has started")
 while True:
     game = input("What would you like to do? (general) ")
     if game =="help":
-        print("wild - spawns a random pokemon")
-        print("trainer - starts a trainer fight (gym battle)")
+        print("wild - spawns a random pokemon")#In Progress
+        print("trainer - starts a trainer fight (gym battle)")#In Progress
         print("save - saves your progress (only one save can be stored at one time") #Completed
         print("load - loads your last save. (all unsaved progress will be lost)") #Completed
         print("quit - will quit your game (all unsaved progress will be lost)") #Completed
@@ -1926,7 +1777,7 @@ while True:
         print("pc - will allow you to view and change the pokemon in your PC") #Completed
         print("party - will allow you to view your party pokemon and their stats") #Completed
         print("location - will show you your location, what pokemon can spawn there, and allow you to travel to other towns (as long as you have won enough battles to do so)") #completed
-        print("money - will show you your current money")
+        print("money - will show you your current money") #Completed
         print("arrange - allows you to rearrange your party or swap your party pokemon with ones in your PC") #Completed
 
     elif game == "wild":
@@ -1939,7 +1790,7 @@ while True:
         savePlayer(player,Generation_Number)
 
     elif game == "load":
-        load()
+        player = loadPlayer(pokemon,Generation_Number,locations)
 
     elif game == "quit":
         game=input("Would you like to save first? ")
@@ -1950,7 +1801,7 @@ while True:
             break
 
     elif game == "buy":
-        buy()
+        storeInit(player)
 
     elif game == "pc":
         player.printPc()
@@ -1975,10 +1826,7 @@ while True:
 
 
     elif game =="money":
-        print("you have $" + str(gamedata["money"]))
-
-    elif game =="debug":
-        debug()
+        print("You have: $" + str(player.getMoney()))
 
     elif game =="order":
         while True:
