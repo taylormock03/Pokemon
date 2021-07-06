@@ -1,5 +1,5 @@
 import numpy as np
-from random import randint
+from random import randint,random
 
 class Pokemon:
     id=0
@@ -20,9 +20,9 @@ class Pokemon:
     # This variable will store the health of the pokemon
     # this applies to all stats
     battleHealth = 0
-    __battleAttack = 0
-    __battleDefence = 0
-    __battleSpeed = 0
+    battleAttack = 0
+    battleDefence = 0
+    battleSpeed = 0
     # NOTE: moveset, xp, and level are not included in this constructor
     # this is because next evolve won't work until all pokemon are already loaded
     # and the moveset, xp and levels are generated at the time of an encounter
@@ -44,9 +44,9 @@ class Pokemon:
         self.id=id
         self.__level = 1
         self.battleHealth = 0
-        self.__battleAttack = 0
-        self.__battleDefence = 0
-        self.__battleSpeed = 0
+        self.battleAttack = 0
+        self.battleDefence = 0
+        self.battleSpeed = 0
         self.status = ""
         return
 
@@ -67,6 +67,15 @@ class Pokemon:
 
     def getLevel(self):
         return self.__level
+
+    def getAttack(self):
+        return self.__attack
+
+    def getDefence(self):
+        return self.__defence
+
+    def getTypes(self):
+        return[self.__type1,self.__type2]
 
     def setXp(self,xp):
         self.__xp = xp
@@ -117,9 +126,9 @@ class Pokemon:
         # this calculation comes from bulbapedia
         self.battleHealth = round((((2*self.__hp)+ iv + (ev/4))/100)+self.__level+10)
 
-        self.__battleAttack = round(((((2*self.__attack)+ iv + (ev/4)) * self.__level)/100 )+5 )
-        self.__battleDefence = round(((((2*self.__defence)+ iv + (ev/4)) * self.__level)/100 )+5)
-        self.__battleSpeed = round(((((2*self.__speed)+ iv + (ev/4)) * self.__level)/100 )+5)
+        self.battleAttack = round(((((2*self.__attack)+ iv + (ev/4)) * self.__level)/100 )+5 )
+        self.battleDefence = round(((((2*self.__defence)+ iv + (ev/4)) * self.__level)/100 )+5)
+        self.battleSpeed = round(((((2*self.__speed)+ iv + (ev/4)) * self.__level)/100 )+5)
 
         # This is to stop you from healing above your maximum health
         self.maxHealth = self.battleHealth
@@ -178,6 +187,224 @@ class Move:
     # sets PP of moves
     def battleInit(self):
         self.__battlePp = self.__pp
+
+    def __str__(self):
+        return ("Name: " + self.name + "\nAccuracy: " + str(self.__accuracy) + "\nDamage: " + str(self.__damage) + "\nType: " + self.__type + "\nPP: " + str(self.__battlePp) + "\nSpecial Effect: " + self.__status + "\n")
+
+    # calculates the move's effects. if it returns false, it means that the move can't be done
+    def attack(self,userPokemon,targetPokemon):
+        if self.__battlePp<0:
+            print("You have insufficient PP to use this move")
+            return False
+
+        self.__battlePp -=1
+
+        # Calculate whether move will hit or not
+        moveHit = randint(0,100) <self.__accuracy
+        if not moveHit:
+            print(userPokemon.name + " missed")
+            return True
+
+        # Calculate move's special effects
+        if self.__status in ["Sleep", "Poison", "Burn", "Freeze", "Paralysis", "Confuse"]:
+            self.inflictStatus(self.__status,targetPokemon)
+        
+        elif self.__status == "Self-Destruct":
+            self.selfDestruct(userPokemon)
+
+        elif self.__status == "AttackUp":
+            self.attackUp(userPokemon)
+
+        elif self.__status == "DefenceUp":
+            self.defenceUp(userPokemon)
+
+        elif self.__status == "SpeedUp":
+            self.speedUp(userPokemon)
+
+        elif self.__status == "AttackDown":
+            self.attackDown(userPokemon)
+
+        elif self.__status == "DefenceDown":
+            self.defenceDown(userPokemon)
+
+        elif self.__status == "SpeedDown":
+            self.speedDown(userPokemon)
+
+        elif self.__status == "Heal":
+            self.heal(userPokemon)
+
+        elif self.__status == "Drain":
+            self.drain(userPokemon,targetPokemon)
+
+        elif self.__status == "Recoil":
+            self.recoil(userPokemon,targetPokemon)
+
+        
+
+        # Calculate the damage dealt to the target pokemon
+        damage = self.damageCalculation(userPokemon,targetPokemon)
+        
+        print(targetPokemon.name + " took " + str(round(damage)) +" damage") 
+        targetPokemon.battleHealth -= round(damage)
+        return True
+
+    # This will calculate how much hp the target pokemon should lose
+    def damageCalculation(self,userPokemon,targetPokemon):
+        try:
+            damage = (((((((2*userPokemon.getLevel()/5)+2)* userPokemon.getAttack()*self.__damage)/targetPokemon.getDefence())/50)+2)*self.typeCalculation(targetPokemon))*randint(217,255)/255
+            return damage
+        except:
+            return 0
+
+    # This calculates whether a move is effective or not e.g fire is not effective against water types 
+    def typeCalculation(self,targetPokemon):
+        targetTypes = targetPokemon.getTypes()
+        # This is where the type matchups are stored
+        typeChart = {"normal":{   "weak":["rock"],
+                                "strong":[],
+                                "noeffect":["ghost"]    
+                            },
+                    "fire":{   "weak":["fire","water","rock","dragon"],
+                                "strong":["grass","ice","bug","steel"],
+                                "noeffect":[]    
+                            },
+                    "qater":{   "weak":["water","grass","dragon"],
+                                "strong":["fire","ground","rock"],
+                                "noeffect":[]    
+                            },
+                    "electric":{   "weak":["electric","grass","dragon"],
+                                "strong":["water","flying"],
+                                "noeffect":["ground"]    
+                            },
+                    "grass":{   "weak":["fire","grass","poison","flying","bug","dragon","steel"],
+                                "strong":["water","ground","rock",],
+                                "noeffect":[]    
+                            },
+                    "ice":{   "weak":["fire","water","ice","steel"],
+                                "strong":["grass","ground","fly","dragon"],
+                                "noeffect":[]    
+                            },
+                    "fighting":{   "weak":["poison","fly","psychic","bug","fairy"],
+                                "strong":["normal","ice","rock","dark","steel"],
+                                "noeffect":["ghost"]    
+                            },
+                    "poison":{   "weak":["poison","ground","rock","ghost"],
+                                "strong":["grass","fairy"],
+                                "noeffect":["steel"]    
+                            },
+                    "ground":{   "weak":["grass","bug"],
+                                "strong":["fire","electric","poison","rock","steel"],
+                                "noeffect":["flying"]    
+                            },
+                    "flying":{   "weak":["electric","rock","steel"],
+                                "strong":["grass","fighting","bug"],
+                                "noeffect":[]    
+                            },
+                    "psychic":{   "weak":["psychic","steel"],
+                                "strong":["fighting","ground"],
+                                "noeffect":["dark"]    
+                            },
+                    "bug":{   "weak":["fire","fighting","poison","flying"],
+                                "strong":["grass","psychic","dark"],
+                                "noeffect":[]    
+                            },
+                    "rock":{   "weak":["fighting","ground","steel"],
+                                "strong":["fire","ice","flying","bug"],
+                                "noeffect":[]    
+                            },
+                    "ghost":{   "weak":["dark"],
+                                "strong":["psychic","ghost"],
+                                "noeffect":["normal"]    
+                            },
+                    "dragon":{   "weak":["steel"],
+                                "strong":["dragon"],
+                                "noeffect":["fairy"]    
+                            },
+                    "dark":{   "weak":["fighting","dark","fairy"],
+                                "strong":["psychic","ghost"],
+                                "noeffect":[]    
+                            },
+                    "steel":{   "weak":["fire","water","electric","steel"],
+                                "strong":["ice","rock","fairy"],
+                                "noeffect":[]    
+                            },
+                    "fairy":{   "weak":["fire","poison","steel"],
+                                "strong":["fighting","dragon","dark"],
+                                "noeffect":[]    
+                            }
+        }
+
+        if targetTypes in typeChart[self.__type]['weak']:
+            print("It was not very effective")
+            return 0.5
+
+        elif targetTypes in typeChart[self.__type]['noeffect']:
+            print("It had no effect")
+            return 0
+
+        elif targetTypes in typeChart[self.__type]['strong']:
+            print("It was super effective")
+            return 2
+
+        else: 
+            return 1
+
+    # will calculate whether a status effect (burn, paralysis, etc.) should be applied
+    def inflictStatus(self,status,targetPokemon):
+        randomNumber = randint(1,3)
+        # This gives a 33% chance of inflicting a status onto the targetPokemon 
+        if randomNumber == 3:
+            targetPokemon.status = status
+
+    def selfDestruct (self,userPokemon):
+        userPokemon.battleHealth = 0
+
+    def attackUp(self,userPokemon):
+        userPokemon.battleAttack *=1.1
+        print(userPokemon.name + "'s attack rose")
+
+    def defenceUp(self,userPokemon):
+        userPokemon.battleDefence *=1.1
+        print(userPokemon.name + "'s defence rose")
+
+    def speedUp(self,userPokemon):
+        userPokemon.battleSpeed *=1.1
+        print(userPokemon.name + "'s speed rose")
+
+    def attackDown(self,targetPokemon):
+        targetPokemon.battleAttack *=0.9
+        print(targetPokemon.name + "'s attack fell")
+
+    def defenceDown(self,targetPokemon):
+        targetPokemon.battleDefence *=0.9
+        print(targetPokemon.name + "'s defence fell")
+
+    def speedDown(self,targetPokemon):
+        targetPokemon.battleSpeed *=0.9
+        print(targetPokemon.name + "'s speed fell")
+
+    # Heals 30% of max HP
+    def heal(self,userPokemon):
+        userPokemon.battleHealth += userPokemon.maxHealth*0.3
+
+        if userPokemon.battleHealth> userPokemon.maxHealth:
+            userPokemon.battleHealth = userPokemon.maxHealth
+
+    # Heals 50% of damage dealt to target pokemon
+    def drain(self,userPokemon,targetPokemon):
+        damage = self.damageCalculation(userPokemon,targetPokemon)
+
+        userPokemon.battleHealth += damage *0.5
+        if userPokemon.battleHealth> userPokemon.maxHealth:
+            userPokemon.battleHealth = userPokemon.maxHealth
+
+    # Damages user by 25% of damage dealt to target pokemon
+    def recoil(self,userPokemon,targetPokemon):
+        damage = self.damageCalculation(userPokemon,targetPokemon)
+
+        userPokemon.battleHealth -= damage *0.25
+
+
 
 class Location:
     name = ""

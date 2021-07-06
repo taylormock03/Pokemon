@@ -1,5 +1,7 @@
-
 # This is where wild encounters will be initialised
+from random import randint
+
+
 def wildBattleInit(player):
     # Choose a random pokemon from the location
     # NOTE: this will return an array with a single pokemon
@@ -30,6 +32,7 @@ def battle(player,ai,gymFight):
     playerPokemon = player.getBattlePokemon()
 
     currentPokemon = 0
+    aiCurrent = 0
     print("Go " + playerPokemon[currentPokemon].name +"!")
     
     # success is a boolean that tells the system whether an action was valid
@@ -46,20 +49,40 @@ def battle(player,ai,gymFight):
             except:
                 print("Invalid entry")
 
+        # attack
         if selection == 1:
-            success = attack(player,ai)
+            success = attack(playerPokemon[currentPokemon],ai[aiCurrent])
+        
+        # swap pokemon
         elif selection ==2:
-            player.partyOrder()
-            success = True
+            try:
+                i=1
+                for x in playerPokemon:
+                    print("#" + str(i) + str(x))
+                selection = int(input("Which pokemon would you like to swap in"))-1
+                if selection <0 or selection >len(playerPokemon)-1:
+                    raise
+
+                currentPokemon = selection
+                print("Go " + playerPokemon[currentPokemon].name +'!')  
+                
+                success = True
+            except:
+                success = False
+            
+        # Use Items
         elif selection == 3:
             success = items(player,ai,gymFight,currentPokemon)
+        
+        # Attempt to run away
         elif selection == 4:
-            runSuccessful = run(player,ai)
+            runSuccessful = run(playerPokemon[currentPokemon],ai,gymFight)
             if runSuccessful:
                 print("Got away safely!")
                 break
             else:
                 print("You tried to run...\nYou could't get away")
+                success = True
 
         
 # Checks to see if all pokemon are dead. 
@@ -71,8 +94,26 @@ def checkDead(pokeList):
             return False
     return True
 
-def attack(player,ai):
-    return
+def attack(playerPokemon,aiPokemon):
+    
+    playerMoves = playerPokemon.getMoves()
+    print("What move would you like to use?\n")
+    i=1
+    for x in playerMoves:
+        print("#" +str(i) +" " + str(x))
+        i+=1
+        
+    while True:
+        try:
+            selection = int(input("> "))-1
+            if selection >4 or selection <0:
+                raise
+
+            return playerMoves[selection].attack(playerPokemon,aiPokemon)
+            break
+        except:
+            print("Invalid input")
+
 
 def items(player,ai,gymFight, currentPokemon):
     print("What would you like to use: ")
@@ -98,5 +139,14 @@ def items(player,ai,gymFight, currentPokemon):
         return player.items[selection].effect(player,currentPokemon)
 
 
-def run(player,ai):
-    return
+def run(playerPokemon,ai,gymBattle):
+    if gymBattle:
+        print("You can't do that right now")
+        return False
+
+    if playerPokemon.battleSpeed > ai[0].battleSpeed:
+        return True
+
+    escapeOdds = (((playerPokemon.battleSpeed*128)/ai[0].battleSpeed)+30)%256
+    randomNumber = randint(0,255)
+    return randomNumber < escapeOdds
