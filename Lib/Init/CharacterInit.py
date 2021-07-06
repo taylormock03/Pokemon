@@ -10,7 +10,7 @@ class Player:
     __currentLocation = 0
     __battleWon = 0
     __money = 0
-    __items = []
+    items = []
 
     def __init__(self, party,pc,currentLocation,battleWon,money,items):
         self.__party=party
@@ -18,7 +18,7 @@ class Player:
         self.__currentLocation=currentLocation
         self.__battleWon=battleWon
         self.__money=money
-        self.__items=items
+        self.items=items
 
     def getLocationId(self):
         return self.__currentLocation.id
@@ -32,7 +32,7 @@ class Player:
     def getItems(self):
         itemDict ={}
         i=0
-        for x in self.__items:
+        for x in self.items:
             itemDict[i] = x.saveValues()
             i+=1
         return itemDict
@@ -67,8 +67,11 @@ class Player:
                 index+=1
         return partyPosition
 
+    # This is used during the battle to keep track of all the party pokemon
+    def getBattlePokemon(self):
+        return self.__party
+
     def addPc(self,pokemon):
-        pokemon.setInitMoves()
         
         if len(self.__party)<6:
             self.__party.append(pokemon)
@@ -232,17 +235,26 @@ class Player:
         # if it does, the new quantity will be added on top of the existing
         # quantity of items
         found = False
-        for x in self.__items:
+        for x in self.items:
             if x.name == item.name:
                 found=True
                 break
         if not found:
             # If this line gets run, it means that the user does not have
-            # any of that item and it will be added onto the end of the __items list
-            self.__items.append(item)
+            # any of that item and it will be added onto the end of the items list
+            self.items.append(item)
 
     def addMoney(self,amount):
         self.__money +=amount
+
+    def catch(self,pokemon):
+        return
+
+    def getPokemon(self,id):
+        return self.__party[id]
+
+
+
 # This will allow for the player to be loaded from the gamedata file
 # The file uses many pointers in a dictionary, so this function needs to 
 # parse it so that it can be used

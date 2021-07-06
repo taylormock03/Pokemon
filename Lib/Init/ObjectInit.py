@@ -10,7 +10,7 @@ class Pokemon:
     __attack = 0
     __defence = 0 
     __speed = 0
-    __status = ""
+    status = ""
     __moveset = []
     __nextEvolve = []
     __xp = 0
@@ -19,7 +19,7 @@ class Pokemon:
     # Health is calculated as a function of the base HP and level
     # This variable will store the health of the pokemon
     # this applies to all stats
-    __battleHealth = 0
+    battleHealth = 0
     __battleAttack = 0
     __battleDefence = 0
     __battleSpeed = 0
@@ -43,10 +43,11 @@ class Pokemon:
         self.__nextEvolve = nextEvolve
         self.id=id
         self.__level = 1
-        self.__battleHealth = 0
+        self.battleHealth = 0
         self.__battleAttack = 0
         self.__battleDefence = 0
         self.__battleSpeed = 0
+        self.status = ""
         return
 
     # Because the pokemon exist as templates on a list, I need to create new pokemon objects with the same data
@@ -114,12 +115,17 @@ class Pokemon:
         ev = 181
         iv = 24
         # this calculation comes from bulbapedia
-        self.__battleHealth = round((((2*self.__hp)+ iv + (ev/4))/100)+self.__level+10)
+        self.battleHealth = round((((2*self.__hp)+ iv + (ev/4))/100)+self.__level+10)
 
         self.__battleAttack = round(((((2*self.__attack)+ iv + (ev/4)) * self.__level)/100 )+5 )
         self.__battleDefence = round(((((2*self.__defence)+ iv + (ev/4)) * self.__level)/100 )+5)
         self.__battleSpeed = round(((((2*self.__speed)+ iv + (ev/4)) * self.__level)/100 )+5)
 
+        # This is to stop you from healing above your maximum health
+        self.maxHealth = self.battleHealth
+
+        # reset statuses
+        self.status = ""
         for x in self.__moveset:
             x.battleInit()
 
@@ -128,7 +134,7 @@ class Pokemon:
         i=0
         while i<4:
             # Chooses a random move within learnsets
-            movePos = randint(0,len(self.learnsets))
+            movePos = randint(0,len(self.learnsets)-1)
             
             # clones it here so a new instance of each move can be istantiated
             name, accuracy, damage, type, id, pp, status =self.learnsets[movePos].clone()

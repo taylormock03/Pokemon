@@ -16,6 +16,35 @@
  ],
  "CurrentLocation": 0,
  "BattleWon": 0,
- "money": 0,
- "Items": {}
+ "money": 870000,
+ "Items": {
+  "0": {
+   "Class": "CatchItem",
+   "ballBonus": 1,
+   "name": "Poke Ball",
+   "cost": 100,
+   "quantity": 1000
+  },
+  "1": {
+   "Class": "CatchItem",
+   "ballBonus": 1000,
+   "name": "Master Ball",
+   "cost": 1000,
+   "quantity": 10
+  },
+  "2": {
+   "Class": "HealItem",
+   "healBonus": 1,
+   "name": "Potion",
+   "cost": 100,
+   "quantity": 100
+  },
+  "3": {
+   "Class": "StatusItem",
+   "status": "Poison",
+   "name": "Antidote",
+   "cost": 100,
+   "quantity": 100
+  }
+ }
 }

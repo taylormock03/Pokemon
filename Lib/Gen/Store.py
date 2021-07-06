@@ -1,4 +1,5 @@
 # This is where the user will first go to the store and be sent to sub areas
+from Lib.Init.ObjectInit import Pokemon
 from Lib.Init.ItemInit import CatchItem, HealItem, StatusItem
 
 
@@ -59,9 +60,9 @@ def healItems(player):
     items = []
     # Add catch items to a list
     items.append(HealItem("Potion",100,1))
-    items.append(HealItem("Super potion",200,1.5))
-    items.append(HealItem("Hyper potion",200,2))
-    items.append(HealItem("Full Heal",200,1000))
+    items.append(HealItem("Super potion",400,2.5))
+    items.append(HealItem("Hyper potion",800,10))
+    items.append(HealItem("Full Heal",1000,1000))
 
     # iterate through the item list and print out the items
     print("\nWe have:")
@@ -124,4 +125,41 @@ def statusItems(player):
 # This is where you can buy pokemon (this doesn't exist AFAIK in the real game so
 # the calculation of price is likely not going to be very balanced)
 def pokeBuy(player,pokemon):
+    selection = input("Please enter the name of the pokemon you would like \n>")
+    
+    found = False
+    for x in pokemon:
+        if x.name == selection:
+            found = True
+            break
+    
+    if not found:
+        print("We couldn't find a pokemon with that name")
+        return
+    
+    while True:
+        try:
+            level = int(input("What level would you like your pokemon to be? "))
+            if level <=0:
+                raise
+            break
+        except:
+            print("Invalid input")
+
+    cost = level* 100
+
+    name, type1, type2, hp, attack, defence, speed, id, learnsets, nextEvolve = x.clone()
+    newPokemon = Pokemon(name, type1, type2, hp, attack, defence, speed, id, learnsets, nextEvolve)
+    newPokemon.randomMoves()
+    newPokemon.setLevel(level)
+
+    print("Your Lvl " + str(newPokemon.getLevel()) + " " + newPokemon.name + " will cost $" + str(cost))
+    selection = input("Would you like to buy it? ")
+    if selection == "yes" and player.getMoney()>=cost:
+        player.addPc(newPokemon)
+        player.addMoney(0-cost)
+        print("Successfully bought")
+    elif player.getMoney()<cost:
+        print("Sorry, you don't have enough money to afford this")
+
     return

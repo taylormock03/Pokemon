@@ -1,4 +1,7 @@
 # Generic item class which will deal with inventory management and purchases
+from random import randint
+
+
 class Item:
     cost=0
     quantity=0
@@ -34,7 +37,38 @@ class CatchItem(Item):
         self.cost = cost
         self.quantity = 0
 
-    def attemptCatch():
+    # This is what will calculate whether you catch a pokemon or not
+    def effect(self,pokemon,player,gymFight):
+        
+        # Check if the player is currently in a gym fight where pokemon
+        # can't be caught
+        if gymFight:
+            print("You can't do that now")
+            return False
+
+        if self.quantity<=0:
+            return False
+        self.quantity-=1
+
+    #    This formula is from https://www.dragonflycave.com/mechanics/gen-vi-vii-capturing
+
+        captureRate = ((3*pokemon.maxHealth-2*pokemon.battleHealth)*0.5*self.ballBonus)/3*pokemon.maxHealth
+
+        escapeNumber = 65536/((255/captureRate)**(3/16)) 
+        escape = False
+        i = 0
+        while i<4:
+            if randint(0,65535)<escapeNumber:
+                escape = True
+                break
+            i+=1
+        
+        if captureRate>255 or escape == False:
+            player.addPc(pokemon)
+            print("Successfully caught " + pokemon.name)
+        else:
+            print("It got out")
+
         return True
     
     # This will store the object as a dictionary so it can be saved
@@ -64,8 +98,28 @@ class HealItem(Item):
         self.healBonus = healBonus
         self.quantity = 0
 
-    def heal():
-        return
+    # ignore is just a boolean value that is not used by this function but is used by catchItems
+    def effect(self,player,currentPokemon):
+        # Choose the pokemon from 
+        pokemon = player.getPokemon(currentPokemon)
+        
+        if self.quantity>0:
+            healAmount = self.healBonus *20
+            if healAmount <pokemon.maxHealth:
+                pokemon.battleHealth += healAmount
+                print(pokemon.name + " healed: " + str(healAmount) +"HP")
+            else:
+                pokemon.battleHealth = pokemon.maxHealth
+                print(pokemon.name + " is now fully healed")
+            
+            print(pokemon.name +" has " + str(pokemon.battleHealth) +'HP')
+            
+            self.quantity-=1
+            return True
+        else:
+            print("You do not have enough " + self.name + " to do this")
+            return False
+        
 
     # This will store the object as a dictionary so it can be saved
     def saveValues(self):
@@ -92,8 +146,20 @@ class StatusItem(Item):
         self.name = name
         self.quantity = 0
     
-    def cure():
-        return
+     # This is what will heal status effects
+    def effect(self,player, currentPokemon):
+        if self.quantity<=0:
+            return False
+        self.quantity-=1
+        currentPokemon = player.getPokemon(currentPokemon)
+
+        if self.statusType == currentPokemon.status:
+            currentPokemon.status = ""
+            print(self.statusType + " Cured")
+            return True
+        else:
+            print(currentPokemon.name + " is not currently " + self.statusType + "ed")
+            return False
 
     # This will store the object as a dictionary so it can be saved
     def saveValues(self):
