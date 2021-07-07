@@ -1,4 +1,5 @@
 # This is where wild encounters will be initialised
+from Lib.Init.ObjectInit import Pokemon
 from random import randint
 
 
@@ -35,56 +36,110 @@ def battle(player,ai,gymFight):
     aiCurrent = 0
     print("Go " + playerPokemon[currentPokemon].name +"!")
     
+    caughtPokemon = False
+    runSuccessful = False
     # success is a boolean that tells the system whether an action was valid
     # for instance, if someone tried to throw a pokeball at a gym trainer's 
     # pokemon, this would fail as they can't be caught, but would not count as a turn
-    success = False
-    while not success:
-        while True:
-            try:
-                selection = int(input("What would you like to do ?\n#1 Attack\n#2 Switch Pokemon\n#3 Items \n#4 Run\n>"))
-                if selection >4 or selection<1:
-                    raise
-                break
-            except:
-                print("Invalid entry")
+    playerSuccess = False
 
-        # attack
-        if selection == 1:
-            success = attack(playerPokemon[currentPokemon],ai[aiCurrent])
+    # This is the main battle loop. It will only end when either the player passes out, trainer passes out, or player runs
+    while True and not runSuccessful and not caughtPokemon:
         
-        # swap pokemon
-        elif selection ==2:
-            try:
-                i=1
-                for x in playerPokemon:
-                    print("#" + str(i) + str(x))
-                selection = int(input("Which pokemon would you like to swap in"))-1
-                if selection <0 or selection >len(playerPokemon)-1:
-                    raise
+        # This is the player's turn
+        while not playerSuccess:
+            while True:
+                try:
+                    selection = int(input("What would you like to do ?\n#1 Attack\n#2 Switch Pokemon\n#3 Items \n#4 Run\n>"))
+                    if selection >4 or selection<1:
+                        raise
+                    break
+                except:
+                    print("Invalid entry")
 
-                currentPokemon = selection
-                print("Go " + playerPokemon[currentPokemon].name +'!')  
-                
-                success = True
-            except:
-                success = False
+            # attack
+            if selection == 1:
+                playerSuccess = attack(playerPokemon[currentPokemon],ai[aiCurrent])
             
-        # Use Items
-        elif selection == 3:
-            success = items(player,ai,gymFight,currentPokemon)
-        
-        # Attempt to run away
-        elif selection == 4:
-            runSuccessful = run(playerPokemon[currentPokemon],ai,gymFight)
-            if runSuccessful:
-                print("Got away safely!")
+            # swap pokemon
+            elif selection ==2:
+                try:
+                    i=1
+                    for x in playerPokemon:
+                        print("#" + str(i) + " "+str(x))
+                    selection = int(input("Which pokemon would you like to swap in\n>"))-1
+                    if selection <0 or selection >len(playerPokemon)-1:
+                        raise
+
+                    currentPokemon = selection
+                    print("Go " + playerPokemon[currentPokemon].name +'!')  
+                    
+                    playerSuccess = True
+                except:
+                    playerSuccess = False
+                
+            # Use Items
+            elif selection == 3:
+                playerSuccess,caughtPokemon = items(player,ai,gymFight,currentPokemon)
+            
+            # Attempt to run away
+            elif selection == 4:
+                runSuccessful = run(playerPokemon[currentPokemon],ai,gymFight)
+                if runSuccessful:
+                    print("Got away safely!")
+                    break
+                else:
+                    print("You tried to run...\nYou could't get away")
+                    playerSuccess = True
+
+        if caughtPokemon or runSuccessful:
+            break
+
+        # Calculates if the ai's pokemon passed out
+        if ai[aiCurrent].battleHealth <=0:
+            print(ai[aiCurrent].name + " passes out")
+            if checkDead(ai):
+                print("You Win!")
+                calculateResults(player,playerPokemon,ai,gymFight)
                 break
             else:
-                print("You tried to run...\nYou could't get away")
-                success = True
+                aiCurrent+=1
+                print("Trainer sends out " + str(ai[aiCurrent])+"\n")
+        else:
+            print(ai[aiCurrent].name + " has " + str(ai[aiCurrent].battleHealth) + " HP\n")
 
+        # Ai's turn
+        aiAttack(ai[aiCurrent],playerPokemon[currentPokemon])
         
+        # Check if player passed out
+        if playerPokemon[currentPokemon].battleHealth <=0:
+            print(playerPokemon[currentPokemon].name + " passes out")
+            if checkDead(playerPokemon):
+                print("You Pass out!")
+                break
+            else:
+                # Get player to swap out their pokemon
+                i = 1
+                for x in playerPokemon:
+                    print("#" + str(i) + " " + str(Pokemon))
+
+                while True:
+                    try:
+                        selection = int(input("Which pokemon would you like to sub in? \n>"))-1
+                        if selection<0 or selection>6 or playerPokemon[selection].battleHealth <=0:
+                            raise
+                        else:
+                            currentPokemon = selection
+                            print("Go " + playerPokemon[currentPokemon].name)
+                            break
+                    except:
+                        print("That pokemon's already passed out")
+        else:
+            print(playerPokemon[currentPokemon].name + " has " + str(playerPokemon[currentPokemon].battleHealth) + " HP\n")
+
+        # Reset player's decisions
+        playerSuccess = False
+
 # Checks to see if all pokemon are dead. 
 # Returns True when all pokemon are dead
 def checkDead(pokeList):
@@ -97,7 +152,7 @@ def checkDead(pokeList):
 def attack(playerPokemon,aiPokemon):
     
     playerMoves = playerPokemon.getMoves()
-    print("What move would you like to use?\n")
+    print("\nWhat move would you like to use?\n")
     i=1
     for x in playerMoves:
         print("#" +str(i) +" " + str(x))
@@ -108,12 +163,19 @@ def attack(playerPokemon,aiPokemon):
             selection = int(input("> "))-1
             if selection >4 or selection <0:
                 raise
-
+            print()
             return playerMoves[selection].attack(playerPokemon,aiPokemon)
             break
         except:
             print("Invalid input")
 
+# runs mostly the same as the attack function, but allows a decision to be made
+# without user input. It selects a random move from the ai's moveset and attacks
+# the player
+def aiAttack(aiPokemon,playerPokemon):
+    selection = randint(0,3)
+    moves = aiPokemon.getMoves()
+    moves[selection].attack(aiPokemon,playerPokemon)
 
 def items(player,ai,gymFight, currentPokemon):
     print("What would you like to use: ")
@@ -136,7 +198,7 @@ def items(player,ai,gymFight, currentPokemon):
         return player.items[selection].effect(ai[0],player,gymFight)
 
     else: 
-        return player.items[selection].effect(player,currentPokemon)
+        return player.items[selection].effect(player,currentPokemon),False
 
 
 def run(playerPokemon,ai,gymBattle):
@@ -150,3 +212,38 @@ def run(playerPokemon,ai,gymBattle):
     escapeOdds = (((playerPokemon.battleSpeed*128)/ai[0].battleSpeed)+30)%256
     randomNumber = randint(0,255)
     return randomNumber < escapeOdds
+
+# Will calculate money rewards and xp gain
+def calculateResults(player,playerPokemonList,ai,gymFight):
+    # calculate the results for a gym fight
+    for x in ai:
+        calculateXp(playerPokemonList,x,gymFight)
+    
+    # Check if any pokemon are leveling up
+    for x in playerPokemonList:
+        x.levelCheck()
+
+    if gymFight:
+        player.addMoney(500)
+        print("You earned $" + str(player.getMoney()) + "\nYou can now travel to a new location!")
+        player.addBattleWon()
+                
+
+# this calculates the xp gain from each battle
+# Formula sourced from https://bulbapedia.bulbagarden.net/wiki/Experience
+def calculateXp(playerPokemonList,defeatedPokemon,gymFight):
+    s = 0
+    for x in playerPokemonList:
+        if x.battleHealth >0:
+            s+=1
+            
+    b = 163
+    
+    l = defeatedPokemon.getLevel()
+
+    for x in playerPokemonList:
+        lP = x.getLevel()
+
+        exp = round(((b*l/5*s)*(2*l+10/l*lP+10)**2.5))
+        
+        x.addXp(exp)

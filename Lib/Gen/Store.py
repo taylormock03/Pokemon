@@ -152,7 +152,7 @@ def pokeBuy(player,pokemon):
     newPokemon = Pokemon(name, type1, type2, hp, attack, defence, speed, id, learnsets, nextEvolve)
     newPokemon.randomMoves()
     newPokemon.setLevel(level)
-
+    newPokemon.addXp(level**3)
     print("Your Lvl " + str(newPokemon.getLevel()) + " " + newPokemon.name + " will cost $" + str(cost))
     selection = input("Would you like to buy it? ")
     if selection == "yes" and player.getMoney()>=cost:

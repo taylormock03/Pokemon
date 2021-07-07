@@ -44,10 +44,10 @@ class CatchItem(Item):
         # can't be caught
         if gymFight:
             print("You can't do that now")
-            return False
+            return False,False
 
         if self.quantity<=0:
-            return False
+            return False,False
         self.quantity-=1
 
     #    This formula is from https://www.dragonflycave.com/mechanics/gen-vi-vii-capturing
@@ -66,10 +66,10 @@ class CatchItem(Item):
         if captureRate>255 or escape == False:
             player.addPc(pokemon)
             print("Successfully caught " + pokemon.name)
+            return True,True
         else:
             print("It got out")
-
-        return True
+            return True,False
     
     # This will store the object as a dictionary so it can be saved
     def saveValues(self):

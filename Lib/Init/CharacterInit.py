@@ -26,6 +26,9 @@ class Player:
     def getBattleWon(self):
         return self.__battleWon
 
+    def addBattleWon(self):
+        self.__battleWon +=1
+        
     def getMoney(self):
         return self.__money
     

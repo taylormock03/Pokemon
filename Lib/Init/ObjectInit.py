@@ -77,15 +77,15 @@ class Pokemon:
     def getTypes(self):
         return[self.__type1,self.__type2]
 
-    def setXp(self,xp):
-        self.__xp = xp
+    def addXp(self,xp):
+        self.__xp += xp
 
     def getXp(self):
         return self.__xp
     
     # return battle health (note: not HP, these are two seperate values)
     def getHealth(self):
-        return self.__battleHealth
+        return self.battleHealth
 
     def CalculateStats():
         return
@@ -153,6 +153,64 @@ class Pokemon:
             self.__moveset.append(newMove)
             i+=1
 
+    # Calculates whether the pokemon should level up and what should happen
+    def levelCheck(self):
+        newLevel = self.__xp**3
+        if newLevel>self.__level:
+            self.setLevel(newLevel)
+
+            # every 2 levels, a pokemon can learn a new move
+            if newLevel % 2 == 0:
+                self.learnMove()
+
+            # every 25 levels, a pokemon can evolve (if it has something to evolve into) 
+            if newLevel % 25 == 0:
+                self.evolve()
+
+    def learnMove(self):
+        randomMove = self.learnsets[randint(0,len(self.learnsets)-1)]
+        print(self.name + " wants to learn: " + str(randomMove))
+        selection =""
+        while selection != "yes" and selection != "no":
+            selection = input("Would you like to learn this move?\n>")
+        
+        if selection =="yes":
+            name, accuracy, damage, type, id, pp, status =randomMove.clone()
+            newMove = Move(name, accuracy, damage, type, id, pp, status)
+
+            print("What move would you like to forget?\n")
+            i=1
+            for x in self.__moveset:
+                print("#" + str(i)+" " + str(x))
+                i+=1
+            
+            while True:
+                try:
+                    selection = int(input(">"))-1
+                    if selection <0 or selection >4:
+                        raise
+                    break
+                except:
+                    print("Invalid input")
+
+            self.__moveset[selection] = newMove
+
+    def evolve(self):
+        if self.__nextEvolve != []:
+            name, type1, type2, hp, attack, defence, speed, id, learnsets, nextEvolve =self.__nextEvolve[0].clone()
+
+            self.name = name
+            self.__type1 = type1
+            self.__type2 = type2
+            self.__hp = hp
+            self.__attack = attack
+            self.__defence = defence
+            self.__speed = speed
+            self.id = id
+            self.learnsets = learnsets
+            self.__nextEvolve = nextEvolve
+
+
 class Move:
     name = ""
     id=0
@@ -199,9 +257,11 @@ class Move:
 
         self.__battlePp -=1
 
+        print(userPokemon.name + " uses " + self.name)
+        
         # Calculate whether move will hit or not
         moveHit = randint(0,100) <self.__accuracy
-        if not moveHit:
+        if not moveHit and not np.isnan(self.__accuracy) :
             print(userPokemon.name + " missed")
             return True
 
@@ -222,13 +282,13 @@ class Move:
             self.speedUp(userPokemon)
 
         elif self.__status == "AttackDown":
-            self.attackDown(userPokemon)
+            self.attackDown(targetPokemon)
 
         elif self.__status == "DefenceDown":
-            self.defenceDown(userPokemon)
+            self.defenceDown(targetPokemon)
 
         elif self.__status == "SpeedDown":
-            self.speedDown(userPokemon)
+            self.speedDown(targetPokemon)
 
         elif self.__status == "Heal":
             self.heal(userPokemon)
@@ -244,6 +304,8 @@ class Move:
         # Calculate the damage dealt to the target pokemon
         damage = self.damageCalculation(userPokemon,targetPokemon)
         
+        if np.isnan(damage):
+            damage = 0
         print(targetPokemon.name + " took " + str(round(damage)) +" damage") 
         targetPokemon.battleHealth -= round(damage)
         return True

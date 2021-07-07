@@ -1773,7 +1773,7 @@ while True:
         print("save - saves your progress (only one save can be stored at one time") #Completed
         print("load - loads your last save. (all unsaved progress will be lost)") #Completed
         print("quit - will quit your game (all unsaved progress will be lost)") #Completed
-        print("buy - will buy a pokeball for $200")
+        print("buy - will buy a pokeball for $200") # Completed
         print("pc - will allow you to view and change the pokemon in your PC") #Completed
         print("party - will allow you to view your party pokemon and their stats") #Completed
         print("location - will show you your location, what pokemon can spawn there, and allow you to travel to other towns (as long as you have won enough battles to do so)") #completed
