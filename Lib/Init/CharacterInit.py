@@ -315,7 +315,7 @@ def loadPlayer(pokemon,genNumber,location):
             pc[i].setMoves(int(moveId))
         
         # set xp to correct value
-        pc[i].setXp(gamedata["xp"][i])
+        pc[i].addXp(gamedata["xp"][i])
         i+=1
 
     # Assign party members

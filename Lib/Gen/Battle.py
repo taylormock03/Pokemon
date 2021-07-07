@@ -34,7 +34,7 @@ def battle(player,ai,gymFight):
 
     currentPokemon = 0
     aiCurrent = 0
-    print("Go " + playerPokemon[currentPokemon].name +"!")
+    print("Go " + playerPokemon[currentPokemon].name +"!\n")
     
     caughtPokemon = False
     runSuccessful = False
@@ -94,6 +94,9 @@ def battle(player,ai,gymFight):
 
         if caughtPokemon or runSuccessful:
             break
+        
+        # Applies any burn or poison damage
+        statusEffect(ai[aiCurrent])
 
         # Calculates if the ai's pokemon passed out
         if ai[aiCurrent].battleHealth <=0:
@@ -111,11 +114,15 @@ def battle(player,ai,gymFight):
         # Ai's turn
         aiAttack(ai[aiCurrent],playerPokemon[currentPokemon])
         
+
+        # apply any burn or poison damage to the player
+        statusEffect(playerPokemon[currentPokemon])
+
         # Check if player passed out
         if playerPokemon[currentPokemon].battleHealth <=0:
             print(playerPokemon[currentPokemon].name + " passes out")
             if checkDead(playerPokemon):
-                print("You Pass out!")
+                print("You Pass out!\n")
                 break
             else:
                 # Get player to swap out their pokemon
@@ -225,8 +232,12 @@ def calculateResults(player,playerPokemonList,ai,gymFight):
 
     if gymFight:
         player.addMoney(500)
-        print("You earned $" + str(player.getMoney()) + "\nYou can now travel to a new location!")
+        print("You earned $500\nYou can now travel to a new location!")
         player.addBattleWon()
+    
+    else:
+        player.addMoney(50)
+        print("You earned $50")
                 
 
 # this calculates the xp gain from each battle
@@ -244,6 +255,13 @@ def calculateXp(playerPokemonList,defeatedPokemon,gymFight):
     for x in playerPokemonList:
         lP = x.getLevel()
 
-        exp = round(((b*l/5*s)*(2*l+10/l*lP+10)**2.5))
+        exp = round((((b*l)/(5*s))*((2*l+10)/(l*lP+10))**2.5))
         
         x.addXp(exp)
+
+
+def statusEffect(pokemon):
+    if pokemon.status == "Burn" or pokemon.status == "Poison":
+        damage = pokemon.maxHealth/16
+        print(pokemon.name + " lost " + str(damage) + " HP due to " + pokemon.status)
+        pokemon.battleHealth-= damage

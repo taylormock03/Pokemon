@@ -1,5 +1,6 @@
 import numpy as np
-from random import randint,random
+from random import randint
+import math
 
 class Pokemon:
     id=0
@@ -155,21 +156,24 @@ class Pokemon:
 
     # Calculates whether the pokemon should level up and what should happen
     def levelCheck(self):
-        newLevel = self.__xp**3
-        if newLevel>self.__level:
+        newLevel = math.floor(self.__xp**(1/3))
+        oldLevel = self.__level
+        if newLevel>oldLevel:
             self.setLevel(newLevel)
+            print(self.name + " levels up to lvl " + str(newLevel))
 
-            # every 2 levels, a pokemon can learn a new move
-            if newLevel % 2 == 0:
-                self.learnMove()
+            for x in range(oldLevel+1, newLevel+1):
+                # every 2 levels, a pokemon can learn a new move
+                if x % 2 == 0:
+                    self.learnMove()
 
-            # every 25 levels, a pokemon can evolve (if it has something to evolve into) 
-            if newLevel % 25 == 0:
-                self.evolve()
+                # every 25 levels, a pokemon can evolve (if it has something to evolve into) 
+                if x % 25 == 0:
+                    self.evolve()
 
     def learnMove(self):
         randomMove = self.learnsets[randint(0,len(self.learnsets)-1)]
-        print(self.name + " wants to learn: " + str(randomMove))
+        print("\n" + self.name + " wants to learn: " + str(randomMove))
         selection =""
         while selection != "yes" and selection != "no":
             selection = input("Would you like to learn this move?\n>")
@@ -193,6 +197,7 @@ class Pokemon:
                 except:
                     print("Invalid input")
 
+            print(self.name + " forgot " + self.__moveset[selection].name + " and learned " + newMove.name )
             self.__moveset[selection] = newMove
 
     def evolve(self):
@@ -306,6 +311,28 @@ class Move:
         
         if np.isnan(damage):
             damage = 0
+        
+        damage = round(damage)
+
+        if userPokemon.status in ["Sleep","Paralysis"]:
+            if randint(1,3) == 1:
+                print(userPokemon.name + " is no longer suffering from " + userPokemon.status)
+                userPokemon.status = ""
+            else:
+                print(userPokemon.name + " couldn't attack due to " + userPokemon.status)
+                return True
+            
+        elif userPokemon.status == "Confusion":
+            randomNumber = randint(1,3)
+            if randomNumber == 1:
+                print(userPokemon.name + " hurt itself " + str(round(damage) + " HP in its confusion"))
+                return True
+
+            randomNumber = randint(1,3)
+            if randomNumber == 1:
+                print(userPokemon.name + " is no longer suffering from " + userPokemon.status)
+                userPokemon.status = ""
+
         print(targetPokemon.name + " took " + str(round(damage)) +" damage") 
         targetPokemon.battleHealth -= round(damage)
         return True
@@ -396,17 +423,21 @@ class Move:
                             }
         }
 
-        if targetTypes in typeChart[self.__type]['weak']:
-            print("It was not very effective")
-            return 0.5
+        for x in targetTypes:
+            check = (typeChart[self.__type]['weak']) 
+            if x in check:
+                print("It was not very effective")
+                return 0.5
 
-        elif targetTypes in typeChart[self.__type]['noeffect']:
-            print("It had no effect")
-            return 0
+            check = typeChart[self.__type]['noeffect']
+            if x in check:
+                print("It had no effect")
+                return 0
 
-        elif targetTypes in typeChart[self.__type]['strong']:
-            print("It was super effective")
-            return 2
+            check = typeChart[self.__type]['strong']
+            if x in check:
+                print("It was super effective")
+                return 2
 
         else: 
             return 1
@@ -416,7 +447,11 @@ class Move:
         randomNumber = randint(1,3)
         # This gives a 33% chance of inflicting a status onto the targetPokemon 
         if randomNumber == 3:
+            print(targetPokemon.name + " now suffers from " + status)
             targetPokemon.status = status
+        
+        else:
+            print(targetPokemon.name + " doesn't suffer from " + status)
 
     def selfDestruct (self,userPokemon):
         userPokemon.battleHealth = 0
@@ -447,8 +482,9 @@ class Move:
 
     # Heals 30% of max HP
     def heal(self,userPokemon):
-        userPokemon.battleHealth += userPokemon.maxHealth*0.3
+        userPokemon.battleHealth += round(userPokemon.maxHealth*0.3)
 
+        print(userPokemon.name +" healed " + str(round(userPokemon.maxHealth*0.3)) + " HP")
         if userPokemon.battleHealth> userPokemon.maxHealth:
             userPokemon.battleHealth = userPokemon.maxHealth
 
@@ -456,15 +492,16 @@ class Move:
     def drain(self,userPokemon,targetPokemon):
         damage = self.damageCalculation(userPokemon,targetPokemon)
 
-        userPokemon.battleHealth += damage *0.5
+        print(userPokemon.name +" healed " + str(round(userPokemon.maxHealth*0.5)) + " HP")
+        userPokemon.battleHealth += round(damage *0.5)
         if userPokemon.battleHealth> userPokemon.maxHealth:
             userPokemon.battleHealth = userPokemon.maxHealth
 
     # Damages user by 25% of damage dealt to target pokemon
     def recoil(self,userPokemon,targetPokemon):
         damage = self.damageCalculation(userPokemon,targetPokemon)
-
-        userPokemon.battleHealth -= damage *0.25
+        print(userPokemon.name + " hurt itself " + str(round(damage*0.25)) + " HP in recoil")
+        userPokemon.battleHealth -= round(damage *0.25)
 
 
 
