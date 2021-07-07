@@ -27,45 +27,41 @@ def firstload():
     global pokemon
     ##Figures out which save file needs to be loaded for the object Init file
     while True:
-        Generation_Number = input("Which generation would you like to play?")
+        Generation_Number = "6"
         # Checks if the entered value is not a number
-        if not Generation_Number.isdigit():
-            print("invalid response")
+    
+        global Generation
+        with open('Generations/Generation_'+ Generation_Number +'.txt') as json_file:
+            Generation = json.load(json_file)            
+        
+        ##This is where the game objects are initialised
+        pokemon,locations = loadAll(Generation)
 
-        # This will load the generation information
-        else:
-            global Generation
-            with open('Generations/Generation_'+ Generation_Number +'.txt') as json_file:
-                Generation = json.load(json_file)            
+        ##Figures out whether a savegame needs to be loaded
+        start=input("Do you want to load a game? ")
+        if start == "yes":
+
+            # creates the player object which stores all the session's data
+            player = loadPlayer(pokemon, Generation_Number,locations)
             
-            ##This is where the game objects are initialised
-            pokemon,locations = loadAll(Generation)
+            # Generation data is no longer necessary as it has been loaded into objects
+            Generation = None            
+            break
 
-            ##Figures out whether a savegame needs to be loaded
-            start=input("Do you want to load a game? ")
-            if start == "yes":
-
-                # creates the player object which stores all the session's data
-                player = loadPlayer(pokemon, Generation_Number,locations)
-                
-                # Generation data is no longer necessary as it has been loaded into objects
-                Generation = None            
+        elif start =="no":
+            if input("Are you sure? This will permanently delete all previous data ") =="yes":
+                # creates an empty player
+                player = Player([],[],locations[0],0,0,[])
+                starter(player,Generation,pokemon)
+                # The generation value can now be removed, as it is no longer useful
+                Generation = None
                 break
-
-            elif start =="no":
-                if input("Are you sure? This will permanently delete all previous data ") =="yes":
-                    # creates an empty player
-                    player = Player([],[],locations[0],0,0,[])
-                    starter(player,Generation,pokemon)
-                    # The generation value can now be removed, as it is no longer useful
-                    Generation = None
-                    break
-                else:
-                    # If you ended up here, You decided not to start a new game and you will be 
-                    # re-prompted to choose a generation
-                    print("")
             else:
-                print("invalid response")
+                # If you ended up here, You decided not to start a new game and you will be 
+                # re-prompted to choose a generation
+                print("")
+        else:
+            print("invalid response")
 
 firstload()
 ###START GAME 
